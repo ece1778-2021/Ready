@@ -22,19 +22,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-        setContentView(R.layout.activity_student_register);
+        setContentView(R.layout.activity_main);
 
-//        mContext = MainActivity.this;
-//        btnLogin = (Button) findViewById(R.id.btn_login);
-//        btnSignup = (Button) findViewById(R.id.btn_signup);
-//        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-//        mEmail = (EditText) findViewById(R.id.input_email);
-//        mPassword = (EditText) findViewById(R.id.input_password);
-//
-//        mProgressBar.setVisibility(View.GONE);
-//        signupBtnLogic();
-//        loginBtnLogic();
+        mContext = MainActivity.this;
+        btnLogin = (Button) findViewById(R.id.btn_login);
+        btnSignup = (Button) findViewById(R.id.btn_signup);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mEmail = (EditText) findViewById(R.id.input_email);
+        mPassword = (EditText) findViewById(R.id.input_password);
+
+        mProgressBar.setVisibility(View.GONE);
+        signupBtnLogic();
+        loginBtnLogic();
     }
 
     private void signupBtnLogic() {
