@@ -16,6 +16,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".StudentRegisterActivity"
+            android:label="Student Registration">
+        </activity>
+
+        <activity
+            android:name=".StudentMainActivity"
+            android:label="Main Page">
+        </activity>
     </application>
 
 </manifest>
