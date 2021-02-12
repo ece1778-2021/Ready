@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:cardView="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/student_assg_list_card"
+    android:id="@+id/student_qt_card"
     android:layout_width="match_parent"
     android:layout_height="90dp"
     cardView:cardCornerRadius="8dp"
@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/student_assg_title"
+            android:id="@+id/student_question"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_margin="8dp"

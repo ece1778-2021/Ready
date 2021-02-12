@@ -10,4 +10,6 @@
     <string name="student_id">Student ID</string>
     <string name="sign_up">Sign Up</string>
     <string name="student_phone">Phone</string>
+    <string name="student_final_answer">Final Answer</string>
+    <string name="student_upload_button">Upload</string>
 </resources>

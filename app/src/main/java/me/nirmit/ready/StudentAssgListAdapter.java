@@ -49,8 +49,8 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.student_assg_title);
-            cardView = itemView.findViewById(R.id.student_assg_list_card);
+            title = itemView.findViewById(R.id.student_question);
+            cardView = itemView.findViewById(R.id.student_qt_card);
 
         }
     }

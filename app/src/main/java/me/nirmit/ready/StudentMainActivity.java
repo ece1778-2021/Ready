@@ -24,7 +24,7 @@ public class StudentMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_student_main);
 
         assgList = new ArrayList<>();
-        recyclerView = (RecyclerView)findViewById(R.id.student_assg_list_card);
+        recyclerView = (RecyclerView)findViewById(R.id.student_qt_card);
         recyclerViewAdapter = new StudentAssgListAdapter(assgList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
