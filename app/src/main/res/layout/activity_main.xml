@@ -9,7 +9,8 @@
         android:orientation="vertical"
         android:paddingTop="55dp"
         android:paddingLeft="25dp"
-        android:paddingRight="25dp">
+        android:paddingRight="25dp"
+        android:id="@+id/linearLayout1">
 
         <!--[TODO] Replace this with an image view.-->
         <TextView
@@ -85,5 +86,29 @@
         android:layout_height="200dp"
         android:id="@+id/progressBar"
         android:layout_centerInParent="true"/>
+
+    <!-- [TODO] TO BE REMOVED ONES LAYOUT COMPLETED-->
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout1"
+        android:layout_marginTop="30dp"
+        android:layout_centerInParent="true">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/teacherBtn"
+            android:text="TEACHER"
+            android:background="@drawable/rounded_button"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/teacherBtn"
+            android:id="@+id/studentBtn"
+            android:text="STUDENT"
+            android:background="@drawable/rounded_button"/>
+    </RelativeLayout>
 
 </RelativeLayout>
