@@ -1,4 +1,4 @@
-package me.nirmit.ready;
+package me.nirmit.ready.Student;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+import me.nirmit.ready.R;
 
 public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.RecyclerViewHolder>{
     private List<String> assgList;
