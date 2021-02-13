@@ -30,8 +30,8 @@
             android:label="Upload">
 
         </activity>
-        <activity android:name=".Student.StudentCourses"/>
         <activity android:name=".Teacher.TeacherAddQuizActivity"/>
+        <activity android:name=".Teacher.TeacherQuizQuestionsActivity"/>
     </application>
 
 </manifest>
