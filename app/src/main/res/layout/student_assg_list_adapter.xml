@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:cardView="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/student_qt_card"
+    android:id="@+id/student_assg_list_card"
     android:layout_width="match_parent"
     android:layout_height="90dp"
     cardView:cardCornerRadius="8dp"

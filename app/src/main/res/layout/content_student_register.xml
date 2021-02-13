@@ -169,7 +169,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:text="@string/sign_up"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="#009688"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.467"
             app:layout_constraintStart_toStartOf="parent"

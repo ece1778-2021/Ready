@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/student_question"
-            android:layout_width="96dp"
+            android:layout_width="wrap_content"
             android:layout_height="25dp"
             android:layout_margin="8dp"
             android:fontFamily="sans-serif-smallcaps"
@@ -40,7 +40,7 @@
             android:ems="10"
             android:fontFamily="sans-serif-smallcaps"
             android:inputType="numberSigned|text|numberDecimal"
-            android:text="@string/student_final_answer"
+            android:hint="@string/student_final_answer"
             android:textSize="14sp"
             android:textStyle="bold"
             cardView:layout_constraintBottom_toBottomOf="parent"

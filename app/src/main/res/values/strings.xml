@@ -12,4 +12,5 @@
     <string name="student_phone">Phone</string>
     <string name="student_final_answer">Final Answer</string>
     <string name="student_upload_button">Upload</string>
+    <string name="take_a_picture">Take a picture</string>
 </resources>

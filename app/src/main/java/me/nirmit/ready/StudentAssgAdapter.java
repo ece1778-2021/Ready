@@ -1,5 +1,6 @@
 package me.nirmit.ready;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import java.util.List;
 public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.RecyclerViewHolder>{
     private List<String> assgList;
     private ClickListener<String> clickListener;
+    private static final String LOG = StudentAssgAdapter.class.getSimpleName();
+
 
 
     public StudentAssgAdapter(List<String> assgList){
@@ -30,6 +33,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
     public void onBindViewHolder(StudentAssgAdapter.RecyclerViewHolder holder, final int position) {
         final String assgQt = assgList.get(position);
         holder.question.setText(assgQt);
+        Log.d(LOG, "clicked");
         //TODO: Save final answer
         //TODO: Upload picture
         //TODO: Set picture visible

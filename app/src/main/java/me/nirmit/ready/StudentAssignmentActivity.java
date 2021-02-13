@@ -24,7 +24,12 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_student_assg);
 
         assgList = new ArrayList<>();
-        recyclerView = (RecyclerView)findViewById(R.id.student_qt_card);
+
+        /*TODO DELETE; Temp */
+        assgList.add("Question 1: a = 1, b = 1, a + b = ?");
+        assgList.add("Question 2: a = 2, b = 3, a + b = ?");
+
+        recyclerView = findViewById(R.id.student_qt_rv);
         recyclerViewAdapter = new StudentAssgAdapter(assgList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
