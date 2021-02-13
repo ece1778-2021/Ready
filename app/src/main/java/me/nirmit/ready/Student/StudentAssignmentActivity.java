@@ -2,10 +2,13 @@ package me.nirmit.ready.Student;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private StudentAssgAdapter recyclerViewAdapter;
     private List<String> assgList;
+    private TextView topBarTitle;
     private static final String LOG = StudentAssignmentActivity.class.getSimpleName();
 
 
@@ -24,6 +28,9 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_assg);
+
+        topBarTitle = (TextView) findViewById(R.id.topBarTitle);
+        topBarTitle.setText("Assignments");
 
         assgList = new ArrayList<>();
 

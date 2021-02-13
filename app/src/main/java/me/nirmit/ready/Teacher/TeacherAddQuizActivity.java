@@ -7,11 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import me.nirmit.ready.R;
 
-public class TeacherQuizes extends AppCompatActivity {
+public class TeacherAddQuizActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.teacher_add_quiz);
+        setContentView(R.layout.activity_teacher_add_quiz);
     }
 }

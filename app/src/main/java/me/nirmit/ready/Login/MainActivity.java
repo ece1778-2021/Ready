@@ -11,8 +11,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import me.nirmit.ready.R;
-import me.nirmit.ready.Student.StudentCourses;
-import me.nirmit.ready.Teacher.TeacherQuizes;
+import me.nirmit.ready.Student.StudentMainActivity;
+import me.nirmit.ready.Student.StudentRegisterActivity;
+import me.nirmit.ready.Teacher.TeacherAddQuizActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         tempTeacher.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, TeacherQuizes.class);
+                Intent intent = new Intent(mContext, TeacherAddQuizActivity.class);
                 startActivity(intent);
             }
         });
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         tempStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, StudentCourses.class);
+                Intent intent = new Intent(mContext, StudentMainActivity.class);
                 startActivity(intent);
             }
         });

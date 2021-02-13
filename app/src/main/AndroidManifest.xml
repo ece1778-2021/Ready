@@ -31,7 +31,7 @@
 
         </activity>
         <activity android:name=".Student.StudentCourses"/>
-        <activity android:name=".Teacher.TeacherQuizes"/>
+        <activity android:name=".Teacher.TeacherAddQuizActivity"/>
     </application>
 
 </manifest>
