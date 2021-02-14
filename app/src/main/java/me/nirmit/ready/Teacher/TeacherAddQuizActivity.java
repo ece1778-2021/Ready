@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import androidx.annotation.Nullable;
@@ -60,7 +63,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         btnAddQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAddQuizDialog(TeacherAddQuizActivity.this);
+                showAddQuizDialog();
             }
         });
     }
@@ -75,21 +78,50 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         });
     }
 
-    private void showAddQuizDialog(Context c) {
-        final EditText taskEditText = new EditText(c);
-        AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("Add an Assessment")
-                .setMessage("Assessment Name: ")
-                .setView(taskEditText)
-                .setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String task = String.valueOf(taskEditText.getText());
-                        quizNames.add(task);
-                    }
-                })
-                .setNegativeButton("Cancel", null)
+    private void showAddQuizDialog() {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.custom_quiz_dialog, null);
+
+        final EditText quizName = view.findViewById(R.id.assessmentName);
+        final CheckBox isHW = view.findViewById(R.id.checkboxHW);
+        final CheckBox isUnitTest = view.findViewById(R.id.checkBoxUnitTest);
+        Button acceptButton = view.findViewById(R.id.acceptButton);
+        Button cancelButton = view.findViewById(R.id.cancelButton);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setView(view)
                 .create();
-        dialog.show();
+
+        alertDialog.show();
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: accept button");
+
+                if (quizName.getText().toString().isEmpty()) {
+                    Toast.makeText(TeacherAddQuizActivity.this, "Enter assessment name",
+                            Toast.LENGTH_SHORT).show();
+                } else if (isHW.isChecked() && isUnitTest.isChecked()) {
+                    Toast.makeText(TeacherAddQuizActivity.this, "Select ONE assessment " +
+                            "type only", Toast.LENGTH_SHORT).show();
+                } else if (!isHW.isChecked() && !isUnitTest.isChecked()) {
+                    Toast.makeText(TeacherAddQuizActivity.this, "Select assessment type ",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    quizNames.add(String.valueOf(quizName.getText()));
+                    alertDialog.cancel();
+                }
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: cancel button" );
+                alertDialog.cancel();
+            }
+        });
     }
+
 }
