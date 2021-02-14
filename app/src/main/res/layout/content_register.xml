@@ -28,7 +28,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".Student.StudentRegisterActivity">
+    tools:context=".Login.RegisterActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -51,8 +51,37 @@
             app:layout_constraintVertical_bias="0.907" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_student"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/register_radio_stu_title" />
+
+        <RadioButton
+            android:id="@+id/radio_teacher"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/register_radio_tec_title" />
+    </RadioGroup>
+
     <TextView
-        android:id="@+id/student_email_title"
+        android:id="@+id/email_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -62,7 +91,7 @@
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/student_mail"
+        android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -72,7 +101,7 @@
         android:inputType="textEmailAddress"/>
 
     <TextView
-        android:id="@+id/student_passord_title"
+        android:id="@+id/passord_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -82,7 +111,7 @@
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/student_password"
+        android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -93,7 +122,7 @@
         android:inputType="textPassword" />
 
     <TextView
-        android:id="@+id/student_pw2_title"
+        android:id="@+id/pw2_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -103,7 +132,7 @@
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/student_pw2"
+        android:id="@+id/pw2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -114,7 +143,7 @@
         android:inputType="textPassword" />
 
     <TextView
-        android:id="@+id/student_name_title"
+        android:id="@+id/name_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -124,7 +153,7 @@
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/student_name"
+        android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -134,29 +163,41 @@
         android:hint="@string/student_name"
         android:inputType="textPersonName" />
 
-    <TextView
-        android:id="@+id/student_id_title"
+    <LinearLayout
+        android:id="@+id/student_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="5dp"
-        android:text="@string/student_id"
-        android:textSize="18sp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <EditText
-        android:id="@+id/student_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="15dp"
-        android:ems="10"
-        android:hint="@string/student_id"
-        android:inputType="textPersonName" />
+        <TextView
+            android:id="@+id/id_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="5dp"
+            android:text="@string/student_id"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="15dp"
+            android:ems="10"
+            android:hint="@string/student_id"
+            android:inputType="textPersonName" />
+
+
+    </LinearLayout>
+
+
 
     <TextView
-        android:id="@+id/student_phone_title"
+        android:id="@+id/phone_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -166,7 +207,7 @@
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/student_phone"
+        android:id="@+id/phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -181,7 +222,7 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/student_signup_button"
+            android:id="@+id/signup_button"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
@@ -190,7 +231,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.467"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

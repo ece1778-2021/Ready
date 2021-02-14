@@ -2,6 +2,9 @@ package me.nirmit.ready.Student;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,14 +15,15 @@ import java.util.List;
 import me.nirmit.ready.R;
 
 public class StudentAssignmentActivity extends AppCompatActivity {
+    private static final String LOG = StudentAssignmentActivity.class.getSimpleName();
 
     private RecyclerView recyclerView;
     private StudentAssgAdapter recyclerViewAdapter;
     private List<String> assgList;
 
     private TextView topBarTitle;
-    private static final String LOG = StudentAssignmentActivity.class.getSimpleName();
-
+    private ProgressBar progressBar;
+    private ImageView ivBackArrow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,12 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         topBarTitle.setText("Assignments");
 
         assgList = new ArrayList<>();
+
+        progressBar = findViewById(R.id.student_assg_progressbar);
+        progressBar.setVisibility(View.VISIBLE);
+        ivBackArrow = (ImageView) findViewById(R.id.backArrow);
+
+        ivBackArrowLogic();
 
         /*TODO DELETE; Temp */
         assgList.add("Question 1: a = 1, b = 1, a + b = ?");
@@ -47,6 +57,18 @@ public class StudentAssignmentActivity extends AppCompatActivity {
             }
         });
         recyclerView.setAdapter(recyclerViewAdapter);
+
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private void ivBackArrowLogic() {
+        ivBackArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(LOG, "onClick: closing the activity");
+                finish();
+            }
+        });
     }
 
 }

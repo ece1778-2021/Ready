@@ -16,8 +16,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Student.StudentRegisterActivity"
-            android:label="Student Registration">
+            android:name=".Login.RegisterActivity"
+            android:label="Register">
 
         </activity>
         <activity
