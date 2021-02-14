@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="19dp"
+    android:background="@color/grey"
+    android:id="@id/linearLayout1">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Assesment"
+        android:fontFamily="sans-serif-smallcaps"
+        android:gravity="center_horizontal"
+        android:textSize="30dp"
+        android:layout_margin="9dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name:" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:id="@+id/assessmentName"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Assessment type (Select One)"
+        android:layout_marginBottom="3dp"/>
+
+    <CheckBox
+        android:id="@+id/checkBoxUnitTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Unit Test" />
+
+    <CheckBox
+        android:id="@+id/checkboxHW"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Homework"
+        android:layout_marginBottom="19dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Deadline"
+        android:textSize="16dp"
+        android:layout_marginBottom="3dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout2"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_below="@id/tvQuestion">
+
+        <TextView
+            android:id="@+id/selectDate"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="Select Date"
+            android:clickable="true"
+            android:textSize="20dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/selectTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Select Time"
+            android:clickable="true"
+            android:textSize="20dp"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout3"
+        android:orientation="vertical">
+
+        <Button
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Complete"
+            android:id="@+id/acceptButton"
+            android:background="@drawable/rounded_button"
+            android:layout_marginHorizontal="20dp"
+            />
+
+        <Button
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/cancelButton"
+            android:background="@drawable/rounded_button"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"
+            />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
