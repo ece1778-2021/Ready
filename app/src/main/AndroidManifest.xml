@@ -32,6 +32,7 @@
         </activity>
         <activity android:name=".Teacher.TeacherAddQuizActivity"/>
         <activity android:name=".Teacher.TeacherQuizQuestionsActivity"/>
+        <activity android:name=".Teacher.TeacherQuestionCreationActivity"/>
     </application>
 
 </manifest>

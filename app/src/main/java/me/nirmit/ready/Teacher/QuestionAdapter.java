@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -64,7 +63,8 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     Log.d("QUESTION CARD:", "Card for: " + questionName.getText());
-                    Toast.makeText(itemView.getContext(), "Question Card for: " + questionName.getText(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(itemView.getContext(),
+//                            "Question Card for: " + questionName.getText(), Toast.LENGTH_LONG).show();
                 }
             });
 

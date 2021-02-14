@@ -1,18 +1,21 @@
 package me.nirmit.ready.Teacher;
 
-import android.content.Context;
-import android.content.DialogInterface;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -20,7 +23,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import me.nirmit.ready.R;
 
@@ -33,7 +39,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
     ArrayList<String> quizNames;
     private TextView topBarTitle;
     private Button btnAddQuiz;
-    ImageView ivBackArrow;
+    private ImageView ivBackArrow;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +84,10 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * =============== POPUP DIALOG ================
+     */
     private void showAddQuizDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View view = layoutInflater.inflate(R.layout.custom_quiz_dialog, null);
@@ -87,12 +97,64 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         final CheckBox isUnitTest = view.findViewById(R.id.checkBoxUnitTest);
         Button acceptButton = view.findViewById(R.id.acceptButton);
         Button cancelButton = view.findViewById(R.id.cancelButton);
+        final TextView selectTime = view.findViewById(R.id.selectTime);
+        final TextView selectDate = view.findViewById(R.id.selectDate);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setView(view)
                 .create();
-
         alertDialog.show();
+
+        selectDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dialog = new DatePickerDialog(
+                        TeacherAddQuizActivity.this,
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                                month = month + 1;
+                                Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
+
+                                String date = month + "/" + day + "/" + year;
+                                selectDate.setText(date);
+                            }},
+                        year,month,day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.show();
+            }
+        });
+
+        selectTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar cal = Calendar.getInstance();
+                int hours = cal.get(Calendar.HOUR_OF_DAY);
+                int mins = cal.get(Calendar.MINUTE);
+                TimePickerDialog timePickerDialog = new TimePickerDialog(
+                        TeacherAddQuizActivity.this,
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                                Calendar c = Calendar.getInstance();
+                                c.set(Calendar.HOUR_OF_DAY, i);
+                                c.set(Calendar.MINUTE, i1);
+                                c.setTimeZone(TimeZone.getDefault());
+                                SimpleDateFormat format = new SimpleDateFormat("k:mm a");
+                                String time = format.format(c.getTime());
+                                selectTime.setText(time);
+                            }
+                        }, hours, mins, false);
+                timePickerDialog.show();
+            }
+        });
 
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override

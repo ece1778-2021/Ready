@@ -6,10 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -67,7 +65,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     Log.d("QUIZ CARD:", "Card for: " + quizName.getText());
-                    Toast.makeText(itemView.getContext(), "hehehe", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(itemView.getContext(), "hehehe", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(itemView.getContext(), TeacherQuizQuestionsActivity.class);
                     itemView.getContext().startActivity(intent);
                 }

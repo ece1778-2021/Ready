@@ -15,7 +15,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:cardElevation="8dp"
         app:cardCornerRadius="8dp"
-        android:id="@+id/quizCard">
+        android:id="@+id/quizCard"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -32,7 +34,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:fontFamily="sans-serif-smallcaps"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical"
+                android:layout_marginLeft="15dp"/>
 
             <Button
                 android:id="@+id/btnDelete"
