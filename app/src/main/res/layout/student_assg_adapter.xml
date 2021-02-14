@@ -25,6 +25,7 @@
             android:textColor="@android:color/black"
             android:textSize="14sp"
             android:textStyle="bold"
+            android:visibility="visible"
             cardView:layout_constraintBottom_toBottomOf="parent"
             cardView:layout_constraintEnd_toEndOf="parent"
             cardView:layout_constraintHorizontal_bias="0.0"
@@ -39,8 +40,8 @@
             android:layout_height="46dp"
             android:ems="10"
             android:fontFamily="sans-serif-smallcaps"
-            android:inputType="numberSigned|text|numberDecimal"
             android:hint="@string/student_final_answer"
+            android:inputType="numberSigned|text|numberDecimal"
             android:textSize="14sp"
             android:textStyle="bold"
             cardView:layout_constraintBottom_toBottomOf="parent"
@@ -76,7 +77,20 @@
             cardView:layout_constraintHorizontal_bias="1.0"
             cardView:layout_constraintStart_toStartOf="parent"
             cardView:layout_constraintTop_toBottomOf="@+id/student_question"
-            cardView:layout_constraintVertical_bias="0.59"
+            cardView:layout_constraintVertical_bias="1.0"
             cardView:srcCompat="@android:mipmap/sym_def_app_icon" />
+
+        <ImageView
+            android:id="@+id/teacher_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:visibility="invisible"
+            cardView:layout_constraintBottom_toTopOf="@+id/student_image"
+            cardView:layout_constraintEnd_toEndOf="@+id/student_image"
+            cardView:layout_constraintStart_toStartOf="@+id/student_image"
+            cardView:layout_constraintTop_toBottomOf="@+id/student_question">
+
+        </ImageView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

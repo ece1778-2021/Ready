@@ -1,7 +1,11 @@
 package me.nirmit.ready.Student;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,13 +18,14 @@ import java.util.List;
 import me.nirmit.ready.R;
 
 public class StudentMainActivity extends AppCompatActivity {
+    private static final String LOG = StudentMainActivity.class.getSimpleName();
 
     private RecyclerView recyclerView;
     private StudentAssgListAdapter recyclerViewAdapter;
     private List<String> assgList;
     private TextView topBarTitle;
-    private static final String LOG = StudentMainActivity.class.getSimpleName();
-
+    private ProgressBar progressBar;
+    private ImageView ivBackArrow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,12 @@ public class StudentMainActivity extends AppCompatActivity {
         topBarTitle.setText("Main Activity");
 
         assgList = new ArrayList<>();
+
+        progressBar = findViewById(R.id.student_main_progressbar);
+        progressBar.setVisibility(View.VISIBLE);
+        ivBackArrow = (ImageView) findViewById(R.id.backArrow);
+
+        ivBackArrowLogic();
 
         /*TO Delete*/
         assgList.add("Test");
@@ -45,9 +56,24 @@ public class StudentMainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(String data) {
                 Log.d(LOG, data);
+                Intent intent = new Intent(StudentMainActivity.this, StudentAssignmentActivity.class);
+                //TODO: putextra
+                startActivity(intent);
             }
         });
         recyclerView.setAdapter(recyclerViewAdapter);
+        progressBar.setVisibility(View.INVISIBLE);
+
+    }
+
+    private void ivBackArrowLogic() {
+        ivBackArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(LOG, "onClick: closing the activity");
+                finish();
+            }
+        });
     }
 
 }

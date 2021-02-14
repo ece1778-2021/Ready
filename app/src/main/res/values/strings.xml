@@ -13,4 +13,6 @@
     <string name="student_final_answer">Final Answer</string>
     <string name="student_upload_button">Upload</string>
     <string name="take_a_picture">Take a picture</string>
+    <string name="register_radio_stu_title">Student</string>
+    <string name="register_radio_tec_title">Teacher</string>
 </resources>

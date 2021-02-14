@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 
 import me.nirmit.ready.R;
 import me.nirmit.ready.Student.StudentMainActivity;
-import me.nirmit.ready.Student.StudentRegisterActivity;
 import me.nirmit.ready.Teacher.TeacherAddQuizActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         mContext = MainActivity.this;
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnSignup = (Button) findViewById(R.id.btn_signup);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) findViewById(R.id.student_assg_progressbar);
         mEmail = (EditText) findViewById(R.id.input_email);
         mPassword = (EditText) findViewById(R.id.input_password);
         //TODO: delete the following
@@ -51,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // [TODO] add logic here
+                Intent intent = new Intent(mContext, RegisterActivity.class);
+                startActivity(intent);
             }
         });
     }

@@ -7,22 +7,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Student.StudentRegisterActivity">
+    tools:context=".Login.RegisterActivity">
 
-<!--    <com.google.android.material.appbar.AppBarLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content">-->
-
-<!--        <androidx.appcompat.widget.Toolbar-->
-<!--            android:id="@+id/student_register_toolbar"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="?attr/actionBarSize"-->
-<!--            android:background="#FFFFFF"-->
-<!--            app:navigationIcon="?attr/homeAsUpIndicator" />-->
-
-<!--    </com.google.android.material.appbar.AppBarLayout>-->
-
-    <include layout="@layout/content_student_register" />
+    <include layout="@layout/content_register" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/profile_fab"

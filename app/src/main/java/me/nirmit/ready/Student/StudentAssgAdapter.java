@@ -34,12 +34,27 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
     @Override
     public void onBindViewHolder(StudentAssgAdapter.RecyclerViewHolder holder, final int position) {
         final String assgQt = assgList.get(position);
-        holder.question.setText(assgQt);
-        Log.d(LOG, "clicked");
+        if (assgQt.length() != 0) {
+            holder.question.setText(assgQt);
+        }
+
+        //TODO:
+        // If teacher upload image instead of entering a question
+        // holder.teacher_image.setVisibility(View.VISIBLE);
+        //If type == assignment:
+        // holder.answer.setVisibility(View.INVISIBLE);
+
         //TODO: Save final answer
         //TODO: Upload picture
         //TODO: Set picture visible
-
+        holder.uploadButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //TODO: upload picture function
+                Log.d(LOG, "Upload button at position " + position + " is clicked");
+            }
+        });
+        Log.d(LOG, "clicked");
     }
     @Override
     public int getItemCount() {
@@ -48,15 +63,16 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private TextView question;
-        private ImageView image;
+        private ImageView student_image;
         private EditText answer;
         private Button uploadButton;
-
+        private ImageView teacher_image;
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             question = itemView.findViewById(R.id.student_question);
-            image = itemView.findViewById(R.id.student_image);
+            student_image = itemView.findViewById(R.id.student_image);
+            teacher_image = itemView.findViewById(R.id.teacher_image);
             answer = itemView.findViewById(R.id.student_answer_text);
             uploadButton = itemView.findViewById(R.id.student_upload_button);
         }
