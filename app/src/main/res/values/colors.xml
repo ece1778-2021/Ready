@@ -9,5 +9,7 @@
     <color name="black">#000</color>
     <color name="link_blue">#005ce6</color>
     <color name="dark_grey">#979494</color>
+    <color name="btnRed">#BE7E87</color>
+    <color name="btnOrange">#E0AE9F</color>
 
 </resources>
