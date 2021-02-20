@@ -12,6 +12,10 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FirebaseMethods {
 
@@ -19,6 +23,7 @@ public class FirebaseMethods {
 
     // Firebase variables
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     // Other variablies
     private String userID;
@@ -27,6 +32,7 @@ public class FirebaseMethods {
     public FirebaseMethods(Context context) {
         FirebaseApp.initializeApp(context);
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         mContext = context;
 
@@ -35,7 +41,7 @@ public class FirebaseMethods {
         }
     }
 
-    public void registerNewEmail(final String email, final String password) {
+    public void registerNewEmail(final String email, final String password){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -55,7 +61,21 @@ public class FirebaseMethods {
                 });
     }
 
-    public void addNewUserToDatabase() {
+    public void addNewUserFirestore(String name, String email, String user_id,
+                                    String id, String phoneNumber, String mode) {
+        Log.d(TAG, "Adding new user to the Firestore backend");
 
+        Map<String, Object> new_user = new HashMap<>();
+        new_user.put("name", name);
+        new_user.put("email", email);
+        new_user.put("user_id", user_id);
+        new_user.put("id", id);
+        new_user.put("phoneNumber", phoneNumber);
+        new_user.put("mode", mode);
+
+        // Add a new document with a generated ID
+        db.collection("users")
+                .document(user_id)
+                .set(new_user);
     }
 }
