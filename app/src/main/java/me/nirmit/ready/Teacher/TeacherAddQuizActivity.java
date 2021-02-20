@@ -2,6 +2,8 @@ package me.nirmit.ready.Teacher;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -23,12 +25,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
+import me.nirmit.ready.Student.StudentMainActivity;
 
 public class TeacherAddQuizActivity extends AppCompatActivity {
 
@@ -39,7 +46,11 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
     ArrayList<String> quizNames;
     private TextView topBarTitle;
     private Button btnAddQuiz;
-    private ImageView ivBackArrow;
+    private ImageView ivBackArrow, signoutBtn;
+    private Context mContext;
+
+    // Firebase stuff
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +59,11 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
 
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
         topBarTitle.setText("Assessments");
+        signoutBtn = (ImageView) findViewById(R.id.signout);
+        ivBackArrow = (ImageView) findViewById(R.id.backArrow);
+        ivBackArrow.setVisibility(View.GONE);
+
+        mContext = TeacherAddQuizActivity.this;
         btnAddQuiz = (Button) findViewById(R.id.btnAddQuiz);
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
 
@@ -61,8 +77,10 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         quizAdapter = new QuizAdapter(this,  quizNames);
         recyclerView.setAdapter(quizAdapter);
 
+        setupFirebaseAuth();
         btnAddQuizLogic();
         ivBackArrowLogic();
+        signoutBtnLogic();
     }
 
     private void btnAddQuizLogic() {
@@ -84,6 +102,19 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         });
     }
 
+    private void signoutBtnLogic() {
+        signoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: Signing out the user");
+                Toast.makeText(mContext, "Signing out the user", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TeacherAddQuizActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                mAuth.signOut();
+                startActivity(intent);
+            }
+        });
+    }
 
     /**
      * =============== POPUP DIALOG ================
@@ -184,6 +215,13 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                 alertDialog.cancel();
             }
         });
+    }
+
+    // ============= Firebase Methods & Logic ===============
+
+    private void setupFirebaseAuth() {
+        FirebaseApp.initializeApp(this);
+        mAuth = FirebaseAuth.getInstance();
     }
 
 }

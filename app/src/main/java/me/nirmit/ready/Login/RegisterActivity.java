@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -30,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Context mContext;
     private TextView topBarTitle;
     private EditText name, email, password, conPassword, ID, phone;
+    private ImageView signoutBtn;
     private Button signUp;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
@@ -46,6 +48,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
         topBarTitle.setText("Register");
+        signoutBtn = (ImageView) findViewById(R.id.signout);
+        signoutBtn.setVisibility(View.GONE);
 
         firebaseMethods = new FirebaseMethods(RegisterActivity.this);
         mContext = RegisterActivity.this;

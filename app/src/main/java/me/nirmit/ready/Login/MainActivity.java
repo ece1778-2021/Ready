@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         loginBtnLogic();
         tempBtnLogic();
 
-        mAuth.signOut(); // [TODO] this is to signout user. For Debugging purpose
     }
 
     private void signupBtnLogic() {
