@@ -10,12 +10,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 import me.nirmit.ready.R;
 import me.nirmit.ready.Student.StudentMainActivity;
 import me.nirmit.ready.Teacher.TeacherAddQuizActivity;

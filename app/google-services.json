@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "490619310579",
+    "project_id": "ready-4c364",
+    "storage_bucket": "ready-4c364.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490619310579:android:00dd04f90c6b8ee74c4286",
+        "android_client_info": {
+          "package_name": "me.nirmit.ready"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "490619310579-au3o5d3oa24vsrfv75b9tekpm2e3njjh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.nirmit.ready",
+            "certificate_hash": "ed1bfd2ad31c0de323b87ecc385ef09cab0c5e2f"
+          }
+        },
+        {
+          "client_id": "490619310579-och4fftg6dh36v0b4c2r1aoalb1n217n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDfzV6Yl32I1gbxVsvRcyyr9OmT7R92K8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "490619310579-och4fftg6dh36v0b4c2r1aoalb1n217n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
