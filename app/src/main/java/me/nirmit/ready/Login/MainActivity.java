@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ============= Firebase Methods & Logic ===============
+
     private void setupFirebaseAuth() {
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();

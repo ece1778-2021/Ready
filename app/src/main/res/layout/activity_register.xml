@@ -11,4 +11,14 @@
 
     <include layout="@layout/content_register" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ProgressBar
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:id="@+id/registerProgressBar"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
