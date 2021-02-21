@@ -2,6 +2,7 @@ package me.nirmit.ready.models;
 
 public class Test {
 
+    private String date_created;
     private String deadline_date;
     private String deadline_time;
     private String testname;
@@ -13,8 +14,9 @@ public class Test {
 
     public Test() {}
 
-    public Test(String deadline_date, String deadline_time, String testname, String type, int status,
-                String course_id, String test_id, String teacher_id) {
+    public Test(String date_created, String deadline_date, String deadline_time, String testname,
+                String type, int status, String course_id, String test_id, String teacher_id) {
+        this.date_created = date_created;
         this.deadline_date = deadline_date;
         this.deadline_time = deadline_time;
         this.testname = testname;
@@ -26,6 +28,10 @@ public class Test {
     }
 
     // ------ Getters ------
+
+    public String getDate_created() {
+        return date_created;
+    }
 
     public String getDeadline_date() {
         return deadline_date;
@@ -62,6 +68,10 @@ public class Test {
     // ------ setters --------
 
 
+    public void setDate_created(String date_created) {
+        this.date_created = date_created;
+    }
+
     public void setDeadline_date(String deadline_date) {
         this.deadline_date = deadline_date;
     }
@@ -97,7 +107,8 @@ public class Test {
     @Override
     public String toString() {
         return "Test{" +
-                "deadline_date='" + deadline_date + '\'' +
+                "date_created='" + date_created + '\'' +
+                ", deadline_date='" + deadline_date + '\'' +
                 ", deadline_time='" + deadline_time + '\'' +
                 ", testname='" + testname + '\'' +
                 ", type='" + type + '\'' +

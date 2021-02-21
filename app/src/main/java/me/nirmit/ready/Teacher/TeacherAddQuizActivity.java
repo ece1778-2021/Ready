@@ -27,17 +27,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.TimeZone;
 
 import me.nirmit.ready.Login.MainActivity;
-import me.nirmit.ready.Login.RegisterActivity;
 import me.nirmit.ready.R;
-import me.nirmit.ready.Student.StudentMainActivity;
 import me.nirmit.ready.Util.FirebaseMethods;
+import me.nirmit.ready.models.Test;
 
 public class TeacherAddQuizActivity extends AppCompatActivity {
 
@@ -58,6 +66,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
     // Firebase stuff
     private FirebaseAuth mAuth;
     private FirebaseMethods firebaseMethods;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,21 +80,13 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         ivBackArrow.setVisibility(View.GONE);
 
         firebaseMethods = new FirebaseMethods(TeacherAddQuizActivity.this);
+        quizNames = new ArrayList<>();
         mContext = TeacherAddQuizActivity.this;
         btnAddQuiz = (Button) findViewById(R.id.btnAddQuiz);
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
 
-        quizNames = new ArrayList<>();
-        quizNames.add("Test 1");
-        quizNames.add("Test 2");
-        quizNames.add("Test 3");
-
-        recyclerView = findViewById(R.id.rcvQuizzes);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        quizAdapter = new QuizAdapter(this,  quizNames);
-        recyclerView.setAdapter(quizAdapter);
-
         setupFirebaseAuth();
+        setupQuizAdapterWithFirestore();
         btnAddQuizLogic();
         ivBackArrowLogic();
         signoutBtnLogic();
@@ -223,7 +224,6 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                             null,
                             mAuth.getCurrentUser().getUid());
 
-                    quizNames.add(String.valueOf(quizName.getText()));
                     alertDialog.cancel();
                 }
             }
@@ -243,6 +243,49 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
     private void setupFirebaseAuth() {
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void setupQuizAdapterWithFirestore() {
+
+        CollectionReference all_photos = db.collection("tests");
+        Query query = all_photos.whereEqualTo("teacher_id",
+                FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.e(TAG, "onEvent: Listen failed:" + error);
+                    return;
+                }
+
+                quizNames.clear();
+
+                final ArrayList<Test> tests = new ArrayList<>();
+                for (DocumentSnapshot document : value) {
+                    Test test = document.toObject(Test.class);
+                    tests.add(test);
+                }
+
+                // sort the tests based on the creation time
+                Collections.sort(tests, new Comparator<Test>() {
+                    @Override
+                    public int compare(Test p1, Test p2) {
+                        return p2.getDate_created().compareTo(p1.getDate_created());
+                    }
+                });
+                for(int i = 0; i < tests.size(); i++){
+                    quizNames.add(tests.get(i).getTestname());
+                }
+
+                recyclerView = findViewById(R.id.rcvQuizzes);
+                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                quizAdapter = new QuizAdapter(mContext,  quizNames);
+                recyclerView.setAdapter(quizAdapter);
+            }
+        });
+
     }
 
 }
