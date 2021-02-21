@@ -2,6 +2,8 @@ package me.nirmit.ready.Teacher;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -23,12 +25,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import me.nirmit.ready.Login.MainActivity;
+import me.nirmit.ready.Login.RegisterActivity;
 import me.nirmit.ready.R;
+import me.nirmit.ready.Student.StudentMainActivity;
+import me.nirmit.ready.Util.FirebaseMethods;
 
 public class TeacherAddQuizActivity extends AppCompatActivity {
 
@@ -39,7 +48,16 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
     ArrayList<String> quizNames;
     private TextView topBarTitle;
     private Button btnAddQuiz;
-    private ImageView ivBackArrow;
+    private ImageView ivBackArrow, signoutBtn;
+    private Context mContext;
+
+    //pop-up global variables
+    private String deadlineDate;
+    private String deadlineTime;
+
+    // Firebase stuff
+    private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +66,12 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
 
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
         topBarTitle.setText("Assessments");
+        signoutBtn = (ImageView) findViewById(R.id.signout);
+        ivBackArrow = (ImageView) findViewById(R.id.backArrow);
+        ivBackArrow.setVisibility(View.GONE);
+
+        firebaseMethods = new FirebaseMethods(TeacherAddQuizActivity.this);
+        mContext = TeacherAddQuizActivity.this;
         btnAddQuiz = (Button) findViewById(R.id.btnAddQuiz);
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
 
@@ -61,8 +85,10 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         quizAdapter = new QuizAdapter(this,  quizNames);
         recyclerView.setAdapter(quizAdapter);
 
+        setupFirebaseAuth();
         btnAddQuizLogic();
         ivBackArrowLogic();
+        signoutBtnLogic();
     }
 
     private void btnAddQuizLogic() {
@@ -84,6 +110,19 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         });
     }
 
+    private void signoutBtnLogic() {
+        signoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: Signing out the user");
+                Toast.makeText(mContext, "Signing out the user", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TeacherAddQuizActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                mAuth.signOut();
+                startActivity(intent);
+            }
+        });
+    }
 
     /**
      * =============== POPUP DIALOG ================
@@ -123,6 +162,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                                 Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
 
                                 String date = month + "/" + day + "/" + year;
+                                deadlineDate = date;
                                 selectDate.setText(date);
                             }},
                         year,month,day);
@@ -147,11 +187,12 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                                 c.set(Calendar.HOUR_OF_DAY, i);
                                 c.set(Calendar.MINUTE, i1);
                                 c.setTimeZone(TimeZone.getDefault());
-                                SimpleDateFormat format = new SimpleDateFormat("k:mm a");
+                                SimpleDateFormat format = new SimpleDateFormat("k:mm");
                                 String time = format.format(c.getTime());
+                                deadlineTime = time;
                                 selectTime.setText(time);
                             }
-                        }, hours, mins, false);
+                        }, hours, mins, true);
                 timePickerDialog.show();
             }
         });
@@ -171,6 +212,17 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                     Toast.makeText(TeacherAddQuizActivity.this, "Select assessment type ",
                             Toast.LENGTH_SHORT).show();
                 } else {
+
+                    // Add to the database
+                    firebaseMethods.addTestFirestore(
+                            deadlineDate,
+                            deadlineTime,
+                            quizName.getText().toString(),
+                            isHW.isChecked() ? "hw" : "test",
+                            0,  // by default nothing is released
+                            null,
+                            mAuth.getCurrentUser().getUid());
+
                     quizNames.add(String.valueOf(quizName.getText()));
                     alertDialog.cancel();
                 }
@@ -184,6 +236,13 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                 alertDialog.cancel();
             }
         });
+    }
+
+    // ============= Firebase Methods & Logic ===============
+
+    private void setupFirebaseAuth() {
+        FirebaseApp.initializeApp(this);
+        mAuth = FirebaseAuth.getInstance();
     }
 
 }
