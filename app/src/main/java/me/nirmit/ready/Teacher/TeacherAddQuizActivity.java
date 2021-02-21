@@ -53,7 +53,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
     
     RecyclerView recyclerView;
     QuizAdapter quizAdapter;
-    ArrayList<String> quizNames;
+    ArrayList<String> quizNames, quizFirebaseIds;
     private TextView topBarTitle;
     private Button btnAddQuiz;
     private ImageView ivBackArrow, signoutBtn;
@@ -81,6 +81,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
 
         firebaseMethods = new FirebaseMethods(TeacherAddQuizActivity.this);
         quizNames = new ArrayList<>();
+        quizFirebaseIds = new ArrayList<>();
         mContext = TeacherAddQuizActivity.this;
         btnAddQuiz = (Button) findViewById(R.id.btnAddQuiz);
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
@@ -261,6 +262,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                 }
 
                 quizNames.clear();
+                quizFirebaseIds.clear();
 
                 final ArrayList<Test> tests = new ArrayList<>();
                 for (DocumentSnapshot document : value) {
@@ -277,11 +279,12 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                 });
                 for(int i = 0; i < tests.size(); i++){
                     quizNames.add(tests.get(i).getTestname());
+                    quizFirebaseIds.add(tests.get(i).getTest_id());
                 }
 
                 recyclerView = findViewById(R.id.rcvQuizzes);
                 recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                quizAdapter = new QuizAdapter(mContext,  quizNames);
+                quizAdapter = new QuizAdapter(mContext,  quizNames, quizFirebaseIds);
                 recyclerView.setAdapter(quizAdapter);
             }
         });
