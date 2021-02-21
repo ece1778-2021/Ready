@@ -34,8 +34,10 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import me.nirmit.ready.Login.MainActivity;
+import me.nirmit.ready.Login.RegisterActivity;
 import me.nirmit.ready.R;
 import me.nirmit.ready.Student.StudentMainActivity;
+import me.nirmit.ready.Util.FirebaseMethods;
 
 public class TeacherAddQuizActivity extends AppCompatActivity {
 
@@ -49,8 +51,13 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
     private ImageView ivBackArrow, signoutBtn;
     private Context mContext;
 
+    //pop-up global variables
+    private String deadlineDate;
+    private String deadlineTime;
+
     // Firebase stuff
     private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,6 +70,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
         ivBackArrow.setVisibility(View.GONE);
 
+        firebaseMethods = new FirebaseMethods(TeacherAddQuizActivity.this);
         mContext = TeacherAddQuizActivity.this;
         btnAddQuiz = (Button) findViewById(R.id.btnAddQuiz);
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
@@ -154,6 +162,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                                 Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
 
                                 String date = month + "/" + day + "/" + year;
+                                deadlineDate = date;
                                 selectDate.setText(date);
                             }},
                         year,month,day);
@@ -178,11 +187,12 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                                 c.set(Calendar.HOUR_OF_DAY, i);
                                 c.set(Calendar.MINUTE, i1);
                                 c.setTimeZone(TimeZone.getDefault());
-                                SimpleDateFormat format = new SimpleDateFormat("k:mm a");
+                                SimpleDateFormat format = new SimpleDateFormat("k:mm");
                                 String time = format.format(c.getTime());
+                                deadlineTime = time;
                                 selectTime.setText(time);
                             }
-                        }, hours, mins, false);
+                        }, hours, mins, true);
                 timePickerDialog.show();
             }
         });
@@ -202,6 +212,17 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                     Toast.makeText(TeacherAddQuizActivity.this, "Select assessment type ",
                             Toast.LENGTH_SHORT).show();
                 } else {
+
+                    // Add to the database
+                    firebaseMethods.addTestFirestore(
+                            deadlineDate,
+                            deadlineTime,
+                            quizName.getText().toString(),
+                            isHW.isChecked() ? "hw" : "test",
+                            0,  // by default nothing is released
+                            null,
+                            mAuth.getCurrentUser().getUid());
+
                     quizNames.add(String.valueOf(quizName.getText()));
                     alertDialog.cancel();
                 }

@@ -12,6 +12,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -77,5 +78,23 @@ public class FirebaseMethods {
         db.collection("users")
                 .document(user_id)
                 .set(new_user);
+    }
+
+    public void addTestFirestore(String deadline_date, String deadline_time, String testname, String type,
+                                 int status, String course_id, String teacher_id) {
+        Log.d(TAG, "Adding new assessment to the Firestore backend");
+
+        Map<String, Object> new_test = new HashMap<>();
+        new_test.put("deadline_date", deadline_date);
+        new_test.put("deadline_time", deadline_time);
+        new_test.put("testname", testname);
+        new_test.put("type", type);
+        new_test.put("status", status);
+        new_test.put("course_id", course_id);
+        new_test.put("teacher_id", teacher_id);
+
+        DocumentReference addedDocRef = db.collection("tests").document();
+        new_test.put("test_id", addedDocRef.getId());
+        addedDocRef.set(new_test);
     }
 }
