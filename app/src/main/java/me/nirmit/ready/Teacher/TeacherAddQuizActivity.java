@@ -213,7 +213,12 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                 } else if (!isHW.isChecked() && !isUnitTest.isChecked()) {
                     Toast.makeText(TeacherAddQuizActivity.this, "Select assessment type ",
                             Toast.LENGTH_SHORT).show();
-                } else {
+                } else if (deadlineDate == null || deadlineDate.length() == 0 ||
+                        deadlineTime == null || deadlineTime.length() == 0) {
+                    Toast.makeText(TeacherAddQuizActivity.this, "Enter deadline ",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else {
 
                     // Add to the database
                     firebaseMethods.addTestFirestore(
