@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import me.nirmit.ready.R;
 import me.nirmit.ready.Student.StudentMainActivity;
 import me.nirmit.ready.Teacher.TeacherAddQuizActivity;
+import me.nirmit.ready.Util.FirebaseMethods;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,12 +38,14 @@ public class MainActivity extends AppCompatActivity {
 
     // Firebase stuff
     private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        firebaseMethods = new FirebaseMethods(MainActivity.this);
         mContext = MainActivity.this;
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnSignup = (Button) findViewById(R.id.btn_signup);
@@ -98,12 +101,8 @@ public class MainActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         try {
                                             Log.d(TAG, "Email is in database");
-                                            /**[TODO] check to see if the signed in user is teacher or student.
-                                             * [TODO] If student -> go to student Main page
-                                             * [TODO] If teacher -> go to TeacherAddQuizActivity page
-                                             */
-                                            Intent intent = new Intent(mContext, TeacherAddQuizActivity.class);
-                                            startActivity(intent);
+                                            firebaseMethods.goToFirstModePage(mAuth.getCurrentUser().getUid());
+
                                         } catch (NullPointerException e) {
                                             Log.e(TAG, "onComplete: NullPointerException");
                                         }
@@ -155,12 +154,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, " User = NULL");
         } else {
             Log.d(TAG, "User is not null: " + user.getUid());
-            /**[TODO] check to see if the signed in user is teacher or student.
-             * [TODO] If student -> go to student Main page
-             * [TODO] If teacher -> go to TeacherAddQuizActivity page
-            */
-            Intent intent = new Intent(mContext, TeacherAddQuizActivity.class);
-            startActivity(intent);
+            firebaseMethods.goToFirstModePage(user.getUid());
         }
     }
 

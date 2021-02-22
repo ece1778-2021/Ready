@@ -1,22 +1,42 @@
 package me.nirmit.ready.Util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
+
+import me.nirmit.ready.Student.StudentMainActivity;
+import me.nirmit.ready.Teacher.TeacherAddQuizActivity;
+import me.nirmit.ready.models.Test;
 
 public class FirebaseMethods {
 
@@ -40,6 +60,12 @@ public class FirebaseMethods {
         if (mAuth.getCurrentUser() != null) {
             userID = mAuth.getCurrentUser().getUid();
         }
+    }
+
+    private String getTimestamp(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.CANADA);
+        sdf.setTimeZone(TimeZone.getTimeZone("Canada/Eastern"));
+        return sdf.format(new Date());
     }
 
     public void registerNewEmail(final String email, final String password){
@@ -85,6 +111,7 @@ public class FirebaseMethods {
         Log.d(TAG, "Adding new assessment to the Firestore backend");
 
         Map<String, Object> new_test = new HashMap<>();
+        new_test.put("date_created", getTimestamp());
         new_test.put("deadline_date", deadline_date);
         new_test.put("deadline_time", deadline_time);
         new_test.put("testname", testname);
@@ -97,4 +124,25 @@ public class FirebaseMethods {
         new_test.put("test_id", addedDocRef.getId());
         addedDocRef.set(new_test);
     }
+
+    public void goToFirstModePage(String userId) {
+
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String mode = documentSnapshot.getString("mode");
+                if (mode.equals("Teacher")) {
+                    Log.d(TAG, "onSuccess: Mode - " + mode );
+                    Intent intent = new Intent(mContext, TeacherAddQuizActivity.class);
+                    mContext.startActivity(intent);
+                } else {
+                    Log.d(TAG, "onSuccess: Mode - " + mode);
+                    Intent intent = new Intent(mContext, StudentMainActivity.class);
+                    mContext.startActivity(intent);
+                }
+            }
+        });
+    }
+
 }
