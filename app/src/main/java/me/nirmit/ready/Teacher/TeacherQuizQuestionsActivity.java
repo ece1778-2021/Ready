@@ -111,6 +111,8 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                         "Adding a question", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(TeacherQuizQuestionsActivity.this,
                         TeacherQuestionCreationActivity.class);
+                intent.putExtra("QUIZ_FIREBASE_ID",
+                        getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
                 startActivity(intent);
 
             }

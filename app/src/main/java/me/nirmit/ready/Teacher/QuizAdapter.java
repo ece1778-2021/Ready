@@ -107,6 +107,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
                     Log.d("QUIZ CARD:", "Card for: " + quizName.getText());
 //                    Toast.makeText(itemView.getContext(), "hehehe", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(itemView.getContext(), TeacherQuizQuestionsActivity.class);
+                    intent.putExtra("QUIZ_FIREBASE_ID", quizFirebaseId.getText().toString());
                     itemView.getContext().startActivity(intent);
                 }
             });

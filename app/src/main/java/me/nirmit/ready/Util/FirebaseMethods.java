@@ -145,4 +145,21 @@ public class FirebaseMethods {
         });
     }
 
+    public void addQuestionInfoFirestore(String test_id, String topic, String answer,
+                        String image_path, String question_text) {
+        Log.d(TAG, "Adding new question to the Firestore backend");
+
+        Map<String, Object> new_question = new HashMap<>();
+        new_question.put("test_id", test_id);
+        new_question.put("topic", topic);
+        new_question.put("answer", answer);
+        new_question.put("image_path", image_path);
+        new_question.put("question_text", question_text);
+
+        DocumentReference addedDocRef = db.collection("questions").document();
+        new_question.put("question_id", addedDocRef.getId());
+        addedDocRef.set(new_question);
+
+    }
+
 }

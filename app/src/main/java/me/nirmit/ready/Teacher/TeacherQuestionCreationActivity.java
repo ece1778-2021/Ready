@@ -17,9 +17,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
+import me.nirmit.ready.Util.FirebaseMethods;
 
 public class TeacherQuestionCreationActivity extends AppCompatActivity {
 
@@ -34,6 +36,8 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
 
     // Firebase stuff
     private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +50,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
         signoutBtn = (ImageView) findViewById(R.id.signout);
 
+        firebaseMethods = new FirebaseMethods(TeacherQuestionCreationActivity.this);
         mContext = TeacherQuestionCreationActivity.this;
         etTopic = (EditText) findViewById(R.id.topic);
         etQuestion = (EditText) findViewById(R.id.textQuestion);
@@ -69,6 +74,26 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Saving question");
+                // Currently only supporting text questions
+                // TODO: support image based questions
+
+                // TODO: do all the checks - check to if the entered info is correct
+                if (etTopic.getText().toString().isEmpty()) {
+                    Toast.makeText(TeacherQuestionCreationActivity.this, "Enter topic name!",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                firebaseMethods.addQuestionInfoFirestore(
+                        getIntent().getStringExtra("QUIZ_FIREBASE_ID"),
+                        etTopic.getText().toString(),
+                        etAnswer.getText().toString(),
+                        null, // TODO: fix when images added
+                        etQuestion.getText().toString());
+
+                // Go back to the questions page
+                Intent intent = new Intent(mContext, TeacherQuizQuestionsActivity.class);
+                intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
+                startActivity(intent);
             }
         });
     }
@@ -129,6 +154,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
     private void setupFirebaseAuth() {
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
 }
