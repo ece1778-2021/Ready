@@ -72,7 +72,6 @@ public class StudentMainActivity extends AppCompatActivity {
         recyclerViewAdapter.setOnItemClickListener(new StudentAssgListAdapter.ClickListener<String>(){
             @Override
             public void onItemClick(String data) {
-                Log.d(LOG, data);
                 Intent intent = new Intent(StudentMainActivity.this, StudentAssignmentActivity.class);
                 //TODO: putextra
                 startActivity(intent);

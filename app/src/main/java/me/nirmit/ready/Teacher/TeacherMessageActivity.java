@@ -8,11 +8,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,19 +22,21 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
+import me.nirmit.ready.Student.StudentMainActivity;
 
-public class TeacherQuizQuestionsActivity extends AppCompatActivity {
-
-    private static final String TAG = "TeacherQuizQuestionsAct";
-
-    RecyclerView recyclerView;
-    QuestionAdapter questionAdapter;
-    ArrayList<String> questionNames;
+public class TeacherMessageActivity extends AppCompatActivity {
+    private static final String LOG = StudentMainActivity.class.getSimpleName();
+    private RecyclerView recyclerView;
     private TextView topBarTitle;
-    private Button btnAddQuestion;
+    private MessageAdapter messageAdapter;
+    private List<String> nameList;
+    private List<Double> markList;
+    private List<Boolean> statusList;
+    private ProgressBar progressBar;
     private BottomNavigationView bottomView;
     private ImageView ivBackArrow, signoutBtn;
     private Context mContext;
@@ -44,36 +46,63 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_teacher_add_questions);
-
+        setContentView(R.layout.activity_teacher_messg);
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
-        topBarTitle.setText("Quiz Questions");
+        topBarTitle.setText("Message Page");
+
+        mContext = TeacherMessageActivity.this;
+        progressBar = findViewById(R.id.messg_progressbar);
+        progressBar.setVisibility(View.VISIBLE);
+        bottomView = findViewById(R.id.bottom_navigation);
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
         signoutBtn = (ImageView) findViewById(R.id.signout);
-        bottomView = findViewById(R.id.bottom_navigation);
 
+        nameList = new ArrayList<>();
+        markList = new ArrayList<>();
+        statusList = new ArrayList<>();
 
-        mContext = TeacherQuizQuestionsActivity.this;
-        btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
-
-        questionNames = new ArrayList<>();
-        questionNames.add("Q1");
-        questionNames.add("Q2");
-        questionNames.add("Q3");
-
-        recyclerView = findViewById(R.id.rcvQuestions);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        questionAdapter = new QuestionAdapter(this,  questionNames);
-        recyclerView.setAdapter(questionAdapter);
+        //TODO: Remove
+        nameList.add("Irene");
+        markList.add(100.);
+        statusList.add(true);
+        nameList.add("Bob");
+        markList.add(90.);
+        statusList.add(false);
 
         setupFirebaseAuth();
-        btnAddQuestionLogic();
         ivBackArrowLogic();
         signoutBtnLogic();
+
+        recyclerView = findViewById(R.id.messg_student_card);
+        messageAdapter = new MessageAdapter(nameList, markList, statusList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(messageAdapter);
+
+        messgAdapterListener();
         bottomViewListener();
 
+        progressBar.setVisibility(View.INVISIBLE);
+
+    }
+
+
+
+    // ============= Listener =================
+
+    private void messgAdapterListener() {
+        messageAdapter.setOnItemClickListener(new MessageAdapter.ClickListener<String, String>(){
+            @Override
+            public void onItemClick(String mark, String status) {
+                // TODO
+                Intent intent = new Intent(TeacherMessageActivity.this, TeacherEditTextActivity.class);
+                intent.putExtra("mark", mark);
+                intent.putExtra("status", status);
+                startActivity(intent);
+            }
+        });
     }
 
     public void bottomViewListener() {
@@ -82,10 +111,10 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.quiz_button:
+                        Intent intent = new Intent(TeacherMessageActivity.this, TeacherQuizQuestionsActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.message_button:
-                        Intent intent = new Intent(TeacherQuizQuestionsActivity.this, TeacherMessageActivity.class);
-                        startActivity(intent);
                         break;
                 }
                 return true;
@@ -97,22 +126,8 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         ivBackArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: closing the activity");
+                Log.d(LOG, "onClick: closing the activity");
                 finish();
-            }
-        });
-    }
-
-    private void btnAddQuestionLogic() {
-        btnAddQuestion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(TeacherQuizQuestionsActivity.this,
-                        "Adding a question", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(TeacherQuizQuestionsActivity.this,
-                        TeacherQuestionCreationActivity.class);
-                startActivity(intent);
-
             }
         });
     }
@@ -121,9 +136,9 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         signoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: Signing out the user");
+                Log.d(LOG, "onClick: Signing out the user");
                 Toast.makeText(mContext, "Signing out the user", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(TeacherQuizQuestionsActivity.this, MainActivity.class);
+                Intent intent = new Intent(TeacherMessageActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 mAuth.signOut();
                 startActivity(intent);
@@ -131,11 +146,12 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         });
     }
 
-
     // ============= Firebase Methods & Logic ===============
 
     private void setupFirebaseAuth() {
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
     }
+
 }
+
