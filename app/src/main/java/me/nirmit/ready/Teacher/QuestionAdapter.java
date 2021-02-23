@@ -49,7 +49,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView questionName;
+        TextView questionName, questionFirebaseId;
         Button btnDeleteQuestion;
         CardView questionCard;
 
@@ -58,6 +58,8 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             questionName = itemView.findViewById(R.id.questionName);
             btnDeleteQuestion = itemView.findViewById(R.id.btnDeleteQuestion);
             questionCard = itemView.findViewById(R.id.questionCard);
+            questionFirebaseId = itemView.findViewById(R.id.questionFirebaseID);
+            questionFirebaseId.setVisibility(View.GONE);
 
             questionCard.setOnClickListener(new View.OnClickListener() {
                 @Override
