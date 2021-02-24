@@ -33,6 +33,10 @@
         <activity android:name=".Teacher.TeacherAddQuizActivity"/>
         <activity android:name=".Teacher.TeacherQuizQuestionsActivity"/>
         <activity android:name=".Teacher.TeacherQuestionCreationActivity"/>
+        <activity android:name=".Teacher.TeacherMessageActivity"/>
+        <activity android:name=".Teacher.TeacherEditTextActivity"/>
+
+
     </application>
 
 </manifest>

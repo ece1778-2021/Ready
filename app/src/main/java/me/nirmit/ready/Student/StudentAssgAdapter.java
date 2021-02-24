@@ -56,6 +56,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         });
         Log.d(LOG, "clicked");
     }
+
     @Override
     public int getItemCount() {
         return assgList.size();
@@ -78,8 +79,8 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         }
     }
 
-    public void setOnItemClickListener(ClickListener<String> movieClickListener) {
-        this.clickListener = movieClickListener;
+    public void setOnItemClickListener(ClickListener<String> clickListener) {
+        this.clickListener = clickListener;
     }
 
     interface ClickListener<T> {

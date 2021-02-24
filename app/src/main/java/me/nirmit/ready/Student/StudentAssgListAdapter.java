@@ -1,5 +1,6 @@
 package me.nirmit.ready.Student;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,6 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
             @Override
             public void onClick(View view) {
                 clickListener.onItemClick(assignment);  //check
-                // TODO: new Intent
             }
         });
 
@@ -57,8 +57,8 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
         }
     }
 
-    public void setOnItemClickListener(ClickListener<String> movieClickListener) {
-        this.clickListener = movieClickListener;
+    public void setOnItemClickListener(ClickListener<String> clickListener) {
+        this.clickListener = clickListener;
     }
 
     interface ClickListener<T> {
