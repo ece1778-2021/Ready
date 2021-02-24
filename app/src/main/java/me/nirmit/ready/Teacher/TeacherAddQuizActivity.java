@@ -53,7 +53,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
     
     RecyclerView recyclerView;
     QuizAdapter quizAdapter;
-    ArrayList<String> quizNames, quizFirebaseIds;
+    ArrayList<Test> assessments;
     private TextView topBarTitle;
     private Button btnAddQuiz;
     private ImageView ivBackArrow, signoutBtn;
@@ -80,8 +80,7 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
         ivBackArrow.setVisibility(View.GONE);
 
         firebaseMethods = new FirebaseMethods(TeacherAddQuizActivity.this);
-        quizNames = new ArrayList<>();
-        quizFirebaseIds = new ArrayList<>();
+        assessments = new ArrayList<>();
         mContext = TeacherAddQuizActivity.this;
         btnAddQuiz = (Button) findViewById(R.id.btnAddQuiz);
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
@@ -266,30 +265,24 @@ public class TeacherAddQuizActivity extends AppCompatActivity {
                     return;
                 }
 
-                quizNames.clear();
-                quizFirebaseIds.clear();
+                assessments.clear();
 
-                final ArrayList<Test> tests = new ArrayList<>();
                 for (DocumentSnapshot document : value) {
                     Test test = document.toObject(Test.class);
-                    tests.add(test);
+                    assessments.add(test);
                 }
 
                 // sort the tests based on the creation time
-                Collections.sort(tests, new Comparator<Test>() {
+                Collections.sort(assessments, new Comparator<Test>() {
                     @Override
                     public int compare(Test p1, Test p2) {
                         return p2.getDate_created().compareTo(p1.getDate_created());
                     }
                 });
-                for(int i = 0; i < tests.size(); i++){
-                    quizNames.add(tests.get(i).getTestname());
-                    quizFirebaseIds.add(tests.get(i).getTest_id());
-                }
 
                 recyclerView = findViewById(R.id.rcvQuizzes);
                 recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                quizAdapter = new QuizAdapter(mContext,  quizNames, quizFirebaseIds);
+                quizAdapter = new QuizAdapter(mContext, assessments);
                 recyclerView.setAdapter(quizAdapter);
             }
         });
