@@ -150,6 +150,7 @@ public class FirebaseMethods {
         Log.d(TAG, "Adding new question to the Firestore backend");
 
         Map<String, Object> new_question = new HashMap<>();
+        new_question.put("date_created", getTimestamp());
         new_question.put("test_id", test_id);
         new_question.put("topic", topic);
         new_question.put("answer", answer);

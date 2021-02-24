@@ -31,6 +31,8 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
 
     private LayoutInflater layoutInflater;
     private List<String> quizzes, quizFirebaseIds;
+
+    // Firebase stuff
     private FirebaseAuth mAuth;
     private FirebaseMethods firebaseMethods;
     private FirebaseFirestore db;

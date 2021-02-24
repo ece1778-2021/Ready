@@ -2,6 +2,7 @@ package me.nirmit.ready.models;
 
 public class Question {
 
+    private String date_created;
     private String question_id;
     private String test_id;
     private String topic;
@@ -10,8 +11,11 @@ public class Question {
     private String image_path;
     private String question_text;
 
-    public Question(String question_id, String test_id, String topic, String answer,
-                    String image_path, String question_text) {
+    public Question() {};
+
+    public Question(String date_created, String question_id, String test_id, String topic,
+                    String answer, String image_path, String question_text) {
+        this.date_created = date_created;
         this.question_id = question_id;
         this.test_id = test_id;
         this.topic = topic;
@@ -21,6 +25,11 @@ public class Question {
     }
 
     // --------- Getters ----------
+
+
+    public String getDate_created() {
+        return date_created;
+    }
 
     public String getQuestion_id() {
         return question_id;
@@ -46,8 +55,12 @@ public class Question {
         return question_text;
     }
 
+
     // -------- Setters --------
 
+    public void setDate_created(String date_created) {
+        this.date_created = date_created;
+    }
 
     public void setQuestion_id(String question_id) {
         this.question_id = question_id;
@@ -76,7 +89,8 @@ public class Question {
     @Override
     public String toString() {
         return "Question{" +
-                "question_id='" + question_id + '\'' +
+                "date_created='" + date_created + '\'' +
+                ", question_id='" + question_id + '\'' +
                 ", test_id='" + test_id + '\'' +
                 ", topic='" + topic + '\'' +
                 ", answer='" + answer + '\'' +

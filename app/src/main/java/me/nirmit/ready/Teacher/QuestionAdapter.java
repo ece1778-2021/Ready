@@ -12,18 +12,38 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.List;
 
 import me.nirmit.ready.R;
+import me.nirmit.ready.Util.FirebaseMethods;
 
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHolder> {
 
     private LayoutInflater layoutInflater;
-    private List<String> questions;
+    private List<String> questions, questionFirebaseIds;
+    private int quetionNumber = 0;
 
-    QuestionAdapter(Context context, List<String> questions) {
+    // Firebase stuff
+    private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseFirestore db;
+
+    QuestionAdapter(Context context, List<String> questions, List<String> questionFirebaseIds) {
+        firebaseMethods = new FirebaseMethods(context);
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         this.layoutInflater = LayoutInflater.from(context);
+        this.quetionNumber = 0;
         this.questions = questions;
+        this.questionFirebaseIds = questionFirebaseIds;
     }
 
     @NonNull
@@ -38,7 +58,9 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
         // bind the textview with data received
         String question = questions.get(position);
-        holder.questionName.setText(question);
+        holder.questionName.setText("Q" + (++quetionNumber) +" " + question);
+        String questionFirebaseId = questionFirebaseIds.get(position);
+        holder.questionFirebaseId.setText(questionFirebaseId);
 
     }
 
@@ -74,6 +96,9 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     Log.d("QUESTION CARD:", "Deleting Card for: " + questionName.getText());
+                    db.collection("questions")
+                            .document(questionFirebaseId.getText().toString())
+                            .delete();
                 }
             });
         }

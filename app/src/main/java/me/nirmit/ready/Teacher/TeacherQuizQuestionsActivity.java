@@ -20,11 +20,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
+import me.nirmit.ready.Util.FirebaseMethods;
+import me.nirmit.ready.models.Question;
+import me.nirmit.ready.models.Test;
 
 public class TeacherQuizQuestionsActivity extends AppCompatActivity {
 
@@ -32,7 +44,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     QuestionAdapter questionAdapter;
-    ArrayList<String> questionNames;
+    ArrayList<String> questionNames, questionFirebaseIds;
     private TextView topBarTitle;
     private Button btnAddQuestion;
     private BottomNavigationView bottomView;
@@ -41,6 +53,8 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
 
     // Firebase stuff
     private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseFirestore db;
 
 
     @Override
@@ -54,21 +68,15 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         signoutBtn = (ImageView) findViewById(R.id.signout);
         bottomView = findViewById(R.id.bottom_navigation);
 
-
+        firebaseMethods = new FirebaseMethods(TeacherQuizQuestionsActivity.this);
         mContext = TeacherQuizQuestionsActivity.this;
         btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
 
         questionNames = new ArrayList<>();
-        questionNames.add("Q1");
-        questionNames.add("Q2");
-        questionNames.add("Q3");
-
-        recyclerView = findViewById(R.id.rcvQuestions);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        questionAdapter = new QuestionAdapter(this,  questionNames);
-        recyclerView.setAdapter(questionAdapter);
+        questionFirebaseIds = new ArrayList<>();
 
         setupFirebaseAuth();
+        setupQuestionAdapterWithFirestore();
         btnAddQuestionLogic();
         ivBackArrowLogic();
         signoutBtnLogic();
@@ -84,7 +92,9 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                     case R.id.quiz_button:
                         break;
                     case R.id.message_button:
-                        Intent intent = new Intent(TeacherQuizQuestionsActivity.this, TeacherMessageActivity.class);
+                        Intent intent = new Intent(TeacherQuizQuestionsActivity.this,
+                                TeacherMessageActivity.class);
+                        intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
                         startActivity(intent);
                         break;
                 }
@@ -139,5 +149,50 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
     private void setupFirebaseAuth() {
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void setupQuestionAdapterWithFirestore() {
+
+        CollectionReference all_photos = db.collection("questions");
+        Query query = all_photos.whereEqualTo("test_id",
+                getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.e(TAG, "onEvent: Listen failed:" + error);
+                    return;
+                }
+
+                questionNames.clear();
+                questionFirebaseIds.clear();
+
+                final ArrayList<Question> questions = new ArrayList<>();
+                for (DocumentSnapshot document : value) {
+                    Question question = document.toObject(Question.class);
+                    questions.add(question);
+                }
+
+                // sort the tests based on the creation time
+                Collections.sort(questions, new Comparator<Question>() {
+                    @Override
+                    public int compare(Question p1, Question p2) {
+                        return p2.getDate_created().compareTo(p1.getDate_created());
+                    }
+                });
+                for(int i = 0; i < questions.size(); i++){
+                    questionNames.add(questions.get(i).getTopic());
+                    questionFirebaseIds.add(questions.get(i).getQuestion_id());
+                }
+
+                recyclerView = findViewById(R.id.rcvQuestions);
+                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                questionAdapter = new QuestionAdapter(mContext,  questionNames, questionFirebaseIds);
+                recyclerView.setAdapter(questionAdapter);
+            }
+        });
+
     }
 }
