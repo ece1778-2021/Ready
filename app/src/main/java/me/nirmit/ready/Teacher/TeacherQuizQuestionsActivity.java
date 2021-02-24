@@ -44,7 +44,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     QuestionAdapter questionAdapter;
-    ArrayList<String> questionNames, questionFirebaseIds;
+    ArrayList<Question> questions;
     private TextView topBarTitle;
     private Button btnAddQuestion;
     private BottomNavigationView bottomView;
@@ -72,8 +72,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         mContext = TeacherQuizQuestionsActivity.this;
         btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
 
-        questionNames = new ArrayList<>();
-        questionFirebaseIds = new ArrayList<>();
+        questions = new ArrayList<>();
 
         setupFirebaseAuth();
         setupQuestionAdapterWithFirestore();
@@ -166,10 +165,8 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                     return;
                 }
 
-                questionNames.clear();
-                questionFirebaseIds.clear();
+                questions.clear();
 
-                final ArrayList<Question> questions = new ArrayList<>();
                 for (DocumentSnapshot document : value) {
                     Question question = document.toObject(Question.class);
                     questions.add(question);
@@ -182,14 +179,10 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                         return p2.getDate_created().compareTo(p1.getDate_created());
                     }
                 });
-                for(int i = 0; i < questions.size(); i++){
-                    questionNames.add(questions.get(i).getTopic());
-                    questionFirebaseIds.add(questions.get(i).getQuestion_id());
-                }
 
                 recyclerView = findViewById(R.id.rcvQuestions);
                 recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                questionAdapter = new QuestionAdapter(mContext,  questionNames, questionFirebaseIds);
+                questionAdapter = new QuestionAdapter(mContext, questions);
                 recyclerView.setAdapter(questionAdapter);
             }
         });
