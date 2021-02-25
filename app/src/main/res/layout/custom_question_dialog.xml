@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="19dp">
 
@@ -28,9 +34,8 @@
             android:id="@+id/questionBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DUMMY QUESTION"
-            android:layout_marginBottom="3dp"
-            android:minLines="10" />
+            android:minLines="10"
+            android:text="DUMMY QUESTION" />
 
         <ImageView
             android:id="@+id/questionImage"
@@ -78,3 +83,4 @@
     </LinearLayout>
 
 </LinearLayout>
+</ScrollView>

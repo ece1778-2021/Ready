@@ -1,8 +1,12 @@
 package me.nirmit.ready.Teacher;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,12 +16,24 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.sql.Timestamp;
 
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
@@ -26,18 +42,24 @@ import me.nirmit.ready.Util.FirebaseMethods;
 public class TeacherQuestionCreationActivity extends AppCompatActivity {
 
     private static final String TAG = "TeacherQuestionCreation";
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int GALLERY_REQUEST = 2;
 
     private TextView topBarTitle;
     private EditText etTopic, etQuestion, etAnswer;
-    private Button btnTypeQuestion, btnUploadQuestion, btnSave;
-    private RelativeLayout relativeLayoutQuestion;
+    private Button btnTypeQuestion, btnUploadQuestion, btnSave, btnCamera, btnAlbum;
+    private Uri imageUrl;
+    private RelativeLayout relativeLayoutQuestion, relativeLayoutBtn;
     private ImageView ivQuestion, ivBackArrow, signoutBtn;
     private Context mContext;
+    private Bitmap imageBitmap;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
     private FirebaseMethods firebaseMethods;
     private FirebaseFirestore db;
+    private FirebaseUser userAcc;
+    private StorageReference storageReference;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +72,10 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
         signoutBtn = (ImageView) findViewById(R.id.signout);
 
+        mAuth = FirebaseAuth.getInstance();
+        userAcc = mAuth.getCurrentUser();
         firebaseMethods = new FirebaseMethods(TeacherQuestionCreationActivity.this);
+        storageReference = FirebaseStorage.getInstance().getReference();
         mContext = TeacherQuestionCreationActivity.this;
         etTopic = (EditText) findViewById(R.id.topic);
         etQuestion = (EditText) findViewById(R.id.textQuestion);
@@ -58,8 +83,12 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         btnSave = (Button) findViewById(R.id.btnSave);
         btnTypeQuestion = (Button) findViewById(R.id.btnTypeQuestion);
         btnUploadQuestion = (Button) findViewById(R.id.btnUploadQuestion);
+        btnCamera = (Button) findViewById(R.id.cameraBtn);
+        btnAlbum = (Button) findViewById(R.id.albumBtn);
         ivQuestion = (ImageView) findViewById(R.id.ivQuestion);
         relativeLayoutQuestion = (RelativeLayout) findViewById(R.id.questionRelLayout);
+        relativeLayoutBtn = (RelativeLayout) findViewById(R.id.btnRelLayout);
+
 
         setupFirebaseAuth();
         btnTypeQuestionLogic();
@@ -67,7 +96,107 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         btnSaveLogic();
         ivBackArrowLogic();
         signoutBtnLogic();
+        btnCameraLogic();
+        btnAlbumLogic();
     }
+
+    // Launch Camera Function
+    private void takePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            Log.d(TAG, String.valueOf(e));
+        }
+    }
+
+    // Open album Function
+    private void chooseFromAlbumIntent() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        try {
+            startActivityForResult(intent, GALLERY_REQUEST);
+        } catch (ActivityNotFoundException e) {
+            Log.d(TAG, String.valueOf(e));
+        }
+
+    }
+
+    private void displayImage() {
+        ivQuestion.setImageBitmap(imageBitmap);
+        relativeLayoutBtn.setVisibility(View.GONE);
+        relativeLayoutQuestion.setVisibility(View.VISIBLE);
+        etQuestion.setVisibility(View.GONE);
+        ivQuestion.setVisibility(View.VISIBLE);
+
+    }
+
+    // Save bitmap data for the image
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_IMAGE_CAPTURE:
+                    Bundle extras = data.getExtras();
+                    imageBitmap = (Bitmap) extras.get("data");
+                    displayImage();
+                    uploadPhoto(imageBitmap);
+                    break;
+
+                case GALLERY_REQUEST:
+                    Uri selectedImage = data.getData();
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(TeacherQuestionCreationActivity.this.getContentResolver(), selectedImage);
+                        displayImage();
+                        uploadPhoto(imageBitmap);
+                    } catch (IOException e) {
+                        Log.i("TAG", "Some exception " + e);
+                    }
+                    break;
+            }
+        }
+    }
+
+    // Upload a photo to storage
+    private void uploadPhoto(Bitmap imageBitmap) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String currentTime = String.valueOf(timestamp.getTime());
+        String timeString = currentTime;
+
+        String userId = userAcc.getUid();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] data = byteArrayOutputStream.toByteArray();
+
+        final StorageReference ref = storageReference.child(userId).child(timeString);
+        ref.putBytes(data)
+                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "task fail: cannot upload photo");
+                        }
+                        return ref.getDownloadUrl();
+                    }
+                })
+                .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            imageUrl = task.getResult();
+                            Log.d(TAG, "Upload photo successfully ");
+                        } else {
+                            String error = task.getException().getMessage();
+                            Log.d(TAG, error);
+                        }
+                    }
+                });
+
+    }
+
+    // ========= Listeners ===========
 
     private void btnSaveLogic() {
         btnSave.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +216,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
                         getIntent().getStringExtra("QUIZ_FIREBASE_ID"),
                         etTopic.getText().toString(),
                         etAnswer.getText().toString(),
-                        null, // TODO: fix when images added
+                        imageUrl == null? "":imageUrl.toString(),
                         etQuestion.getText().toString());
 
                 // Go back to the questions page
@@ -98,15 +227,37 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         });
     }
 
+    public void btnCameraLogic() {
+        btnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                takePictureIntent();
+            }
+        });
+    }
+
+    public void btnAlbumLogic() {
+        btnAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseFromAlbumIntent();
+            }
+        });
+    }
+
     private void btnUploadQuestionLogic() {
         btnUploadQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Uploading Question");
-                relativeLayoutQuestion.setVisibility(View.VISIBLE);
-                etQuestion.setVisibility(View.GONE);
-                ivQuestion.setVisibility(View.VISIBLE);
-                ivQuestion.setImageResource(R.drawable.ic_launcher_background);
+                if (imageBitmap != null) {
+                    Log.d(TAG, "image not null");
+                    ivQuestion.setImageBitmap(imageBitmap);
+                    ivQuestion.setVisibility(View.VISIBLE);
+                    etQuestion.setVisibility(View.GONE);
+
+                }
+                else relativeLayoutBtn.setVisibility(View.VISIBLE);
             }
         });
         
@@ -117,6 +268,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Typeing question");
+                relativeLayoutBtn.setVisibility(View.GONE);
                 relativeLayoutQuestion.setVisibility(View.VISIBLE);
                 etQuestion.setVisibility(View.VISIBLE);
                 ivQuestion.setVisibility(View.GONE);

@@ -1,6 +1,8 @@
 package me.nirmit.ready.Teacher;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +20,14 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -106,7 +111,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                     TextView answerBox = popup_view.findViewById(R.id.answerBox);
                     Button closePopupBtn = popup_view.findViewById(R.id.closeBtn);
                     // TODO: make use of this.
-                    ImageView questionImage = popup_view.findViewById(R.id.questionImage);
+                    final ImageView questionImage = popup_view.findViewById(R.id.questionImage);
 
 
                     final AlertDialog alertDialog = new AlertDialog.Builder(view.getContext())
@@ -120,7 +125,16 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                         if (q.getQuestion_id().equals
                                 (questionFirebaseId.getText().toString())) {
                             if (q.getImage_path() != null) {
-                                // questionImage.setImageBitmap();
+
+                                StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(q.getImage_path());
+                                storageReference.getBytes(1024*1024)
+                                        .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                            @Override
+                                            public void onSuccess(byte[] bytes) {
+                                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                questionImage.setImageBitmap(bitmap);
+                                            }
+                                        });
                             } else {
                                 questionBox.setText(q.getQuestion_text());
                             }
