@@ -15,11 +15,11 @@
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvQuestions"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/relLayout1"
+        android:layout_height="575dp"
         android:layout_above="@+id/btnAddQuiz"
-        android:id="@+id/rcvQuestions"/>
+        android:layout_below="@id/relLayout1" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAddQuestion"

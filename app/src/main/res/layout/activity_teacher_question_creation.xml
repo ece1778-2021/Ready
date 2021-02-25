@@ -108,7 +108,7 @@
             android:layout_height="180dp"
             android:layout_below="@+id/btnRelLayout"
             android:id="@+id/questionRelLayout"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <EditText
                 android:id="@+id/textQuestion"
@@ -125,8 +125,22 @@
             <ImageView
                 android:id="@+id/ivQuestion"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="140dp"
                 android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/img_delete_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ivQuestion"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_weight="0.5"
+                android:background="@drawable/rounded_button"
+                android:padding="10dp"
+                android:text="Delete Image"
+                android:visibility="gone" />
 
         </RelativeLayout>
 

@@ -26,16 +26,17 @@
 
             <TextView
                 android:id="@+id/questionName"
-                android:layout_width="wrap_content"
+                android:layout_width="237dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:gravity="center_vertical"
                 android:text="Q 1"
-                android:textSize="40dp"
+                android:textSize="30dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:fontFamily="sans-serif-smallcaps"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="15dp"/>
+                app:layout_constraintVertical_bias="0.517" />
 
             <TextView
                 android:id="@+id/questionFirebaseID"

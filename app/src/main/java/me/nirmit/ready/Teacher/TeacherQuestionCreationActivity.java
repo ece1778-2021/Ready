@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,7 +49,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
 
     private TextView topBarTitle;
     private EditText etTopic, etQuestion, etAnswer;
-    private Button btnTypeQuestion, btnUploadQuestion, btnSave, btnCamera, btnAlbum;
+    private Button btnTypeQuestion, btnUploadQuestion, btnSave, btnCamera, btnAlbum, btnDle;
     private Uri imageUrl;
     private RelativeLayout relativeLayoutQuestion, relativeLayoutBtn;
     private ImageView ivQuestion, ivBackArrow, signoutBtn;
@@ -85,6 +87,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         btnUploadQuestion = (Button) findViewById(R.id.btnUploadQuestion);
         btnCamera = (Button) findViewById(R.id.cameraBtn);
         btnAlbum = (Button) findViewById(R.id.albumBtn);
+        btnDle = (Button) findViewById(R.id.img_delete_btn);
         ivQuestion = (ImageView) findViewById(R.id.ivQuestion);
         relativeLayoutQuestion = (RelativeLayout) findViewById(R.id.questionRelLayout);
         relativeLayoutBtn = (RelativeLayout) findViewById(R.id.btnRelLayout);
@@ -98,6 +101,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         signoutBtnLogic();
         btnCameraLogic();
         btnAlbumLogic();
+        btnDeleteLogic();
     }
 
     // Launch Camera Function
@@ -129,6 +133,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         relativeLayoutQuestion.setVisibility(View.VISIBLE);
         etQuestion.setVisibility(View.GONE);
         ivQuestion.setVisibility(View.VISIBLE);
+        btnDle.setVisibility(View.VISIBLE);
 
     }
 
@@ -163,14 +168,13 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
     private void uploadPhoto(Bitmap imageBitmap) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String currentTime = String.valueOf(timestamp.getTime());
-        String timeString = currentTime;
 
         String userId = userAcc.getUid();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         byte[] data = byteArrayOutputStream.toByteArray();
 
-        final StorageReference ref = storageReference.child(userId).child(timeString);
+        final StorageReference ref = storageReference.child(userId).child(currentTime);
         ref.putBytes(data)
                 .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
@@ -196,6 +200,43 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
 
     }
 
+    // check if inputs are correct
+    public boolean validate() {
+        boolean valid = true;
+        String topic = etTopic.getText().toString();
+        if (topic.isEmpty() || topic.trim().equals("")) {
+            etTopic.setError("Enter topic name!");
+            valid = false;
+        }
+        String question = etQuestion.getText().toString();
+        if ((question.isEmpty() || question.trim().equals("")) && imageUrl == null) {
+            Toast.makeText(TeacherQuestionCreationActivity.this, "Enter text question or upload an image!",
+                    Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    private void deletePhoto() {
+        StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl.toString());
+        photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                imageUrl = null;
+                imageBitmap = null;
+                ivQuestion.setVisibility(View.GONE);
+                btnDle.setVisibility(View.GONE);
+                Log.d(TAG, "Delete file successfuly");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.d(TAG, "Fail to delete file");
+            }
+        });
+    }
+
     // ========= Listeners ===========
 
     private void btnSaveLogic() {
@@ -203,26 +244,30 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Saving question");
-                // Currently only supporting text questions
-                // TODO: support image based questions
 
-                // TODO: do all the checks - check to if the entered info is correct
-                if (etTopic.getText().toString().isEmpty()) {
-                    Toast.makeText(TeacherQuestionCreationActivity.this, "Enter topic name!",
-                            Toast.LENGTH_SHORT).show();
+                if (validate()) {
+                    firebaseMethods.addQuestionInfoFirestore(
+                            getIntent().getStringExtra("QUIZ_FIREBASE_ID"),
+                            etTopic.getText().toString(),
+                            etAnswer.getText().toString(),
+                            imageUrl == null? null:imageUrl.toString(),
+                            etQuestion.getText().toString());
+
+                    // Go back to the questions page
+                    Intent intent = new Intent(mContext, TeacherQuizQuestionsActivity.class);
+                    intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
+                    startActivity(intent);
                 }
 
-                firebaseMethods.addQuestionInfoFirestore(
-                        getIntent().getStringExtra("QUIZ_FIREBASE_ID"),
-                        etTopic.getText().toString(),
-                        etAnswer.getText().toString(),
-                        imageUrl == null? "":imageUrl.toString(),
-                        etQuestion.getText().toString());
+            }
+        });
+    }
 
-                // Go back to the questions page
-                Intent intent = new Intent(mContext, TeacherQuizQuestionsActivity.class);
-                intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
-                startActivity(intent);
+    public void btnDeleteLogic() {
+        btnDle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deletePhoto();
             }
         });
     }
@@ -255,9 +300,13 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
                     ivQuestion.setImageBitmap(imageBitmap);
                     ivQuestion.setVisibility(View.VISIBLE);
                     etQuestion.setVisibility(View.GONE);
+                    btnDle.setVisibility(View.VISIBLE);
 
                 }
-                else relativeLayoutBtn.setVisibility(View.VISIBLE);
+                else {
+                    relativeLayoutBtn.setVisibility(View.VISIBLE);
+                    etQuestion.setVisibility(View.GONE);
+                }
             }
         });
         
@@ -272,6 +321,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
                 relativeLayoutQuestion.setVisibility(View.VISIBLE);
                 etQuestion.setVisibility(View.VISIBLE);
                 ivQuestion.setVisibility(View.GONE);
+                btnDle.setVisibility(View.GONE);
             }
         });
     }
@@ -281,6 +331,9 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: closing the activity");
+                if (imageUrl != null) {
+                    deletePhoto();
+                }
                 finish();
             }
         });

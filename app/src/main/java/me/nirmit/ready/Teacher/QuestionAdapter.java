@@ -125,7 +125,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                         if (q.getQuestion_id().equals
                                 (questionFirebaseId.getText().toString())) {
                             if (q.getImage_path() != null) {
-
                                 StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(q.getImage_path());
                                 storageReference.getBytes(1024*1024)
                                         .addOnSuccessListener(new OnSuccessListener<byte[]>() {

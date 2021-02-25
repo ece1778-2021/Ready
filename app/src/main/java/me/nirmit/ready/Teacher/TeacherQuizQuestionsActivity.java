@@ -176,7 +176,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                 Collections.sort(questions, new Comparator<Question>() {
                     @Override
                     public int compare(Question p1, Question p2) {
-                        return p2.getDate_created().compareTo(p1.getDate_created());
+                        return p1.getDate_created().compareTo(p2.getDate_created());
                     }
                 });
 
