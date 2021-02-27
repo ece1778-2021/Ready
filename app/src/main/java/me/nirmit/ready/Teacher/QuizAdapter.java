@@ -26,23 +26,25 @@ import java.util.Map;
 
 import me.nirmit.ready.R;
 import me.nirmit.ready.Util.FirebaseMethods;
+import me.nirmit.ready.models.Test;
 
 public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
 
     private LayoutInflater layoutInflater;
-    private List<String> quizzes, quizFirebaseIds;
+    private List<Test> assessments;
+
+    // Firebase stuff
     private FirebaseAuth mAuth;
     private FirebaseMethods firebaseMethods;
     private FirebaseFirestore db;
 
-    QuizAdapter(Context context, List<String> quizzes, List<String> quizFirebaseIds) {
+    QuizAdapter(Context context, List<Test> assessments) {
         firebaseMethods = new FirebaseMethods(context);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         this.layoutInflater = LayoutInflater.from(context);
-        this.quizzes = quizzes;
-        this.quizFirebaseIds = quizFirebaseIds;
+        this.assessments = assessments;
     }
 
     @NonNull
@@ -56,12 +58,13 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
 
         // bind the textview with data received
-        String quiz = quizzes.get(position);
+        String quiz = assessments.get(position).getTestname();
         holder.quizName.setText(quiz);
-        String quizFirebaseId = quizFirebaseIds.get(position);
+        String quizFirebaseId = assessments.get(position).getTest_id();
         holder.quizFirebaseId.setText(quizFirebaseId);
 
-        DocumentReference docRef = db.collection("tests").document(quizFirebaseIds.get(position));
+        DocumentReference docRef = db.collection("tests")
+                .document(assessments.get(position).getTest_id());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -82,7 +85,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return quizzes.size();
+        return assessments.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -107,6 +110,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
                     Log.d("QUIZ CARD:", "Card for: " + quizName.getText());
 //                    Toast.makeText(itemView.getContext(), "hehehe", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(itemView.getContext(), TeacherQuizQuestionsActivity.class);
+                    intent.putExtra("QUIZ_FIREBASE_ID", quizFirebaseId.getText().toString());
                     itemView.getContext().startActivity(intent);
                 }
             });

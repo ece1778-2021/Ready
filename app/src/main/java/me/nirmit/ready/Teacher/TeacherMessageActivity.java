@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -112,6 +111,7 @@ public class TeacherMessageActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.quiz_button:
                         Intent intent = new Intent(TeacherMessageActivity.this, TeacherQuizQuestionsActivity.class);
+                        intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
                         startActivity(intent);
                         break;
                     case R.id.message_button:
