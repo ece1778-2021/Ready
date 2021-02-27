@@ -80,7 +80,13 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(itemView.getContext(), StudentAssignmentActivity.class);
-                    //TODO: putextra
+                    intent.putExtra("PUBLISHED_TEST_FIREBASE_ID", firebaseTestId.getText().toString());
+                    // pass down the test type (test or hw)
+                    for (int i = 0; i < assessments.size(); i++) {
+                        if (assessments.get(i).getTest_id().equals(firebaseTestId.getText().toString())) {
+                            intent.putExtra("TEST_TYPE", assessments.get(i).getType());
+                        }
+                    }
                     itemView.getContext().startActivity(intent);
                 }
             });

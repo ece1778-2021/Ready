@@ -164,7 +164,4 @@ public class FirebaseMethods {
 
     }
 
-    // get test questions
-
-
 }

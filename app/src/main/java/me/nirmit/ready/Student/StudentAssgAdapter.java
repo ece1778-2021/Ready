@@ -1,5 +1,9 @@
 package me.nirmit.ready.Student;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,38 +15,82 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.List;
 
 import me.nirmit.ready.R;
+import me.nirmit.ready.Teacher.TeacherAddQuizActivity;
+import me.nirmit.ready.Util.FirebaseMethods;
+import me.nirmit.ready.models.Question;
+import me.nirmit.ready.models.Test;
 
 public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.RecyclerViewHolder>{
-    private List<String> assgList;
-    private ClickListener<String> clickListener;
-    private static final String LOG = StudentAssgAdapter.class.getSimpleName();
+
+    private static final String TAG = "StudentAssgAdapter";
+
+    private LayoutInflater layoutInflater;
+    private List<Question> questions;
+    private String testType;
+
+    // Firebase stuff
+    private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseFirestore db;
 
 
+    public StudentAssgAdapter(Context context, List<Question> questions, String testType){
+        firebaseMethods = new FirebaseMethods(context);
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-    public StudentAssgAdapter(List<String> assgList){
-        this.assgList = assgList;
+        this.layoutInflater = LayoutInflater.from(context);
+        this.questions = questions;
+        this.testType = testType;
     }
+
     @Override
     public StudentAssgAdapter.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.student_assg_adapter, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.student_assg_adapter, parent, false);
         return new RecyclerViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(StudentAssgAdapter.RecyclerViewHolder holder, final int position) {
-        final String assgQt = assgList.get(position);
-        if (assgQt.length() != 0) {
-            holder.question.setText(assgQt);
+    public void onBindViewHolder(final StudentAssgAdapter.RecyclerViewHolder holder, final int position) {
+
+        // Display question (text or an image)
+        if (questions.get(position).getImage_path() != null) {
+            holder.question.setText("Question");
+            holder.teacher_image.setVisibility(View.VISIBLE);
+
+            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
+                    questions.get(position).getImage_path());
+            storageReference.getBytes(1024*1024)
+                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            holder.teacher_image.setImageBitmap(bitmap);
+                        }
+                    });
+
+        } else { // text based question
+            final String assgQt = questions.get(position).getQuestion_text();
+            if (assgQt.length() != 0) {
+                holder.question.setText(assgQt);
+            }
         }
 
-        //TODO:
-        // If teacher upload image instead of entering a question
-        // holder.teacher_image.setVisibility(View.VISIBLE);
-        //If type == assignment:
-        // holder.answer.setVisibility(View.INVISIBLE);
+        // Display answer box if type == test else not.
+        if (testType.equals("hw")) {
+            holder.answer.setVisibility(View.GONE);
+        }
 
         //TODO: Save final answer
         //TODO: Upload picture
@@ -51,15 +99,14 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             @Override
             public void onClick(View v) {
                 //TODO: upload picture function
-                Log.d(LOG, "Upload button at position " + position + " is clicked");
+                Log.d(TAG, "Upload button at position " + position + " is clicked");
             }
         });
-        Log.d(LOG, "clicked");
     }
 
     @Override
     public int getItemCount() {
-        return assgList.size();
+        return questions.size();
     }
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
@@ -79,12 +126,5 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         }
     }
 
-    public void setOnItemClickListener(ClickListener<String> clickListener) {
-        this.clickListener = clickListener;
-    }
-
-    interface ClickListener<T> {
-        void onItemClick(T data);
-    }
 }
 

@@ -10,12 +10,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +31,8 @@ import java.util.List;
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
 import me.nirmit.ready.Util.FirebaseMethods;
+import me.nirmit.ready.models.Question;
+import me.nirmit.ready.models.Test;
 
 public class StudentAssignmentActivity extends AppCompatActivity {
     
@@ -32,6 +42,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private StudentAssgAdapter recyclerViewAdapter;
     private List<String> assgList;
+    private ArrayList<Question> testQuestions;
 
     private TextView topBarTitle;
     private ProgressBar progressBar;
@@ -40,6 +51,8 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
     // Firebase stuff
     private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +66,9 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
 
         assgList = new ArrayList<>();
+        testQuestions = new ArrayList<>();
 
+        firebaseMethods = new FirebaseMethods(StudentAssignmentActivity.this);
         mContext = StudentAssignmentActivity.this;
         progressBar = findViewById(R.id.student_assg_progressbar);
         progressBar.setVisibility(View.VISIBLE);
@@ -61,23 +76,9 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         setupFirebaseAuth();
         ivBackArrowLogic();
         signoutBtnLogic();
-
-        /*TODO DELETE; Temp */
-        assgList.add("Question 1: a = 1, b = 1, a + b = ?");
-        assgList.add("Question 2: a = 2, b = 3, a + b = ?");
-
-        recyclerView = findViewById(R.id.student_qt_rv);
-        recyclerViewAdapter = new StudentAssgAdapter(assgList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        recyclerViewAdapter.setOnItemClickListener(new StudentAssgAdapter.ClickListener<String>(){
-            @Override
-            public void onItemClick(String data) {
-                Log.d(LOG, data);
-            }
-        });
-        recyclerView.setAdapter(recyclerViewAdapter);
+        getTestQuestionsFirestore(
+                getIntent().getStringExtra("PUBLISHED_TEST_FIREBASE_ID"),
+                getIntent().getStringExtra("TEST_TYPE"));
 
         progressBar.setVisibility(View.INVISIBLE);
     }
@@ -112,7 +113,40 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private void setupFirebaseAuth() {
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
+
+    // get test questions
+    public void getTestQuestionsFirestore(String testId, final String testType) {
+
+        CollectionReference all_tests = db.collection("questions");
+        Query query = all_tests.whereEqualTo("test_id", testId);
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                if (error != null) {
+                    Log.e(TAG, "onEvent: Listen failed:" + error);
+                    return;
+                }
+
+                testQuestions.clear();
+
+                for (DocumentSnapshot document : value) {
+                    Question question = document.toObject(Question.class);
+                    testQuestions.add(question);
+                }
+
+                recyclerView = findViewById(R.id.student_qt_rv);
+                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                StudentAssgAdapter studentAssgAdapter =
+                        new StudentAssgAdapter(mContext, testQuestions, testType);
+                recyclerView.setAdapter(studentAssgAdapter);
+            }
+        });
+    }
+
 
 
 }

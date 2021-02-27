@@ -26,6 +26,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import me.nirmit.ready.Login.MainActivity;
@@ -135,7 +137,14 @@ public class StudentMainActivity extends AppCompatActivity {
                     publishedTests.add(test);
                 }
 
-                // todo: sort things as needed
+                // sort based on deadlines
+                Collections.sort(publishedTests, new Comparator<Test>() {
+                    @Override
+                    public int compare(Test p1, Test p2) {
+                        return p1.getDeadline_date().compareTo(p2.getDeadline_date()) &
+                                p1.getDeadline_time().compareTo(p2.getDeadline_time());
+                    }
+                });
 
                 recyclerView = findViewById(R.id.student_card);
                 recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
