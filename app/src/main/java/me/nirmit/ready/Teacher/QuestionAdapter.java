@@ -43,6 +43,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
     private LayoutInflater layoutInflater;
     private List<Question> questions;
+    private boolean isQuizPublished;
     private int quetionNumber = 0;
 
     // Firebase stuff
@@ -50,7 +51,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
     private FirebaseMethods firebaseMethods;
     private FirebaseFirestore db;
 
-    QuestionAdapter(Context context, List<Question> questions) {
+    QuestionAdapter(Context context, List<Question> questions, boolean isQuizPublished) {
         firebaseMethods = new FirebaseMethods(context);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -58,6 +59,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         this.layoutInflater = LayoutInflater.from(context);
         this.quetionNumber = 0;
         this.questions = questions;
+        this.isQuizPublished = isQuizPublished;
     }
 
     @NonNull
@@ -75,6 +77,10 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         holder.questionName.setText("Q" + (++quetionNumber) +" " + questionTopic);
         String questionFirebaseId = questions.get(position).getQuestion_id();
         holder.questionFirebaseId.setText(questionFirebaseId);
+
+        if (isQuizPublished) {
+            holder.btnDeleteQuestion.setVisibility(View.GONE);
+        }
 
     }
 

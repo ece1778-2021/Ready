@@ -94,6 +94,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                         Intent intent = new Intent(TeacherQuizQuestionsActivity.this,
                                 TeacherMessageActivity.class);
                         intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
+                        intent.putExtra("IS_QUIZ_PUBLISHED", getIntent().getStringExtra("IS_QUIZ_PUBLISHED"));
                         startActivity(intent);
                         break;
                 }
@@ -113,6 +114,11 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
     }
 
     private void btnAddQuestionLogic() {
+
+        if (getIntent().getStringExtra("IS_QUIZ_PUBLISHED").equals("1")) {
+            btnAddQuestion.setVisibility(View.GONE);
+        }
+
         btnAddQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,7 +188,8 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
 
                 recyclerView = findViewById(R.id.rcvQuestions);
                 recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                questionAdapter = new QuestionAdapter(mContext, questions);
+                questionAdapter = new QuestionAdapter(mContext, questions,
+                        getIntent().getStringExtra("IS_QUIZ_PUBLISHED").equals("1") ? true : false);
                 recyclerView.setAdapter(questionAdapter);
             }
         });
