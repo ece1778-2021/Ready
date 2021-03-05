@@ -124,7 +124,6 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         } catch (ActivityNotFoundException e) {
             Log.d(TAG, String.valueOf(e));
         }
-
     }
 
     private void displayImage() {

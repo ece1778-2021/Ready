@@ -57,6 +57,12 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
 
         String testFirebaseId = assessments.get(position).getTest_id();
         holder.firebaseTestId.setText(testFirebaseId);
+
+        String dueDate = assessments.get(position).getDeadline_date();
+        String dueTime = assessments.get(position).getDeadline_time();
+        String due = "Due: " + dueDate + " " + dueTime;
+        holder.dueText.setText(due);
+
     }
 
 
@@ -66,7 +72,7 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
     }
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private TextView title, firebaseTestId;
+        private TextView title, firebaseTestId, dueText;
         private CardView cardView;
 
         public RecyclerViewHolder(final View itemView) {
@@ -74,6 +80,7 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
             title = itemView.findViewById(R.id.student_question);
             firebaseTestId = itemView.findViewById(R.id.firebaseTestId);
             firebaseTestId.setVisibility(View.GONE);
+            dueText = itemView.findViewById(R.id.due_date_text);
             cardView = itemView.findViewById(R.id.student_assg_list_card);
 
             cardView.setOnClickListener(new View.OnClickListener() {

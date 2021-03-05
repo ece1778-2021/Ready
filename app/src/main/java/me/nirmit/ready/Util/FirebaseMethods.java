@@ -164,4 +164,21 @@ public class FirebaseMethods {
 
     }
 
+    public void addAnswerFirestore(String test_id, String question_id,
+                                   String user_id, String image_path, String answer) {
+        Log.d(TAG, "Adding an answer to the Firestore backend");
+
+        Map<String, Object>  new_answer = new HashMap<>();
+        new_answer.put("test_id", test_id);
+        new_answer.put("question_id", question_id);
+        new_answer.put("user_id", user_id);
+        new_answer.put("date_submitted", getTimestamp());
+        new_answer.put("image_path", image_path);
+        new_answer.put("answer", answer);
+
+        DocumentReference addDocRef = db.collection("answers").document();
+        new_answer.put("answer_id", addDocRef.getId());
+        addDocRef.set(new_answer);
+    }
+
 }
