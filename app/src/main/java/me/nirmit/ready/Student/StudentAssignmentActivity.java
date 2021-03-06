@@ -130,11 +130,9 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
-
-    // ========= Camera Methods =========
+    // ========= Photo Methods =========
 
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -151,16 +149,14 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
     public void takePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
+
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
             File photoFile = null;
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
             }
-            // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
                         "com.example.android.fileprovider",
@@ -184,12 +180,11 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         }
     }
 
+    // Can use this if needed
     private void setPic(ImageView imageView) {
-        // Get the dimensions of the View
         int targetW = imageView.getWidth();
         int targetH = imageView.getHeight();
 
-        // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
 
@@ -197,17 +192,13 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
         int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
 
-        // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
         Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
-//        imageView.setImageBitmap(bitmap);
         uploadPhoto(bitmap);
     }
 
@@ -217,19 +208,14 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_IMAGE_CAPTURE:
-//                    Bundle extras = data.getExtras();
-//                    imageBitmap = (Bitmap) extras.get("data");
-//                    uploadPhoto(imageBitmap);
-
                     File file = new File(currentPhotoPath);
                     try {
                         imageBitmap = MediaStore.Images.Media.getBitmap(
                                 getContentResolver(), Uri.fromFile(file));
                         uploadPhoto(imageBitmap);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.i(TAG, "Exception: " + e);
                     }
-
                     break;
 
                 case GALLERY_REQUEST:
@@ -238,7 +224,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                         imageBitmap = MediaStore.Images.Media.getBitmap(StudentAssignmentActivity.this.getContentResolver(), selectedImage);
                         uploadPhoto(imageBitmap);
                     } catch (IOException e) {
-                        Log.i("TAG", "Some exception " + e);
+                        Log.i(TAG, "Exception: " + e);
                     }
                     break;
             }
@@ -359,9 +345,6 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                 }
 
                 for (int i = 0; i < testQuestions.size(); i++) {
-                    Log.d(TAG, testQuestions.get(i).getQuestion_id());
-//                    Answer[] testAnswerArr = new Answer[testQuestions.size()];
-
                     getAnswersFirestore(testQuestions.get(i).getQuestion_id(), i);
                 }
             }
@@ -377,38 +360,18 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful() && task.getResult() != null) {  // no such answer on the database
-                            if (task.getResult().isEmpty()) {
-//                                testAnswerArray[i]= new Answer();
-                                testAnswers.set(i, new Answer());
-                                Log.d(TAG, "ANSWER eMPTY");
-                            } else {
-                                boolean submitted = false;
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    if (Objects.equals(document.getString("user_id"), userAcc.getUid())) {
-                                        Answer answer = document.toObject(Answer.class);
-                                        Log.d(TAG, answer.getQuestion_id());
-//                                        testAnswerArray[i]= answer;
-                                        testAnswers.set(i, answer);
-                                        submitted = true;
-                                        Log.d(TAG, "ANSWER not null ");
-                                    }
-                                }
-                                if (!submitted) {  // no such answer submitted by a student
-//                                    testAnswerArray[i]= new Answer();
-                                    testAnswers.set(i, new Answer());
-                                    Log.d(TAG, "ANSWER eMPTY for student");
-
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (Objects.equals(document.getString("user_id"), userAcc.getUid())) {
+                                    Answer answer = document.toObject(Answer.class);
+                                    testAnswers.set(i, answer);
                                 }
                             }
-
-
                         }
 
                         recyclerViewAdapter =
                                 new StudentAssgAdapter(mContext, testQuestions, testAnswers, testType, testId, imageUrl);
                         recyclerView.setAdapter(recyclerViewAdapter);
                     }
-
 
                 });
     }

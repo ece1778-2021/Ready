@@ -144,7 +144,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Upload button at position " + position + " is clicked");
-                photoAlertDialog();  // launch buttons
+                photoAlertDialog();  // launch alert
 
             }
         });
@@ -154,7 +154,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             public void onClick(View view) {
                 if (imageUrl != null) {
                     StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
-                    storageReference.getBytes(1024*1024)
+                    storageReference.getBytes(2048*2048)
                             .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                 @Override
                                 public void onSuccess(byte[] bytes) {
