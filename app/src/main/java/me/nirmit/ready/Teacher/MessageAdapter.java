@@ -1,5 +1,7 @@
 package me.nirmit.ready.Teacher;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,23 +10,39 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.List;
 
 import me.nirmit.ready.R;
+import me.nirmit.ready.Util.FirebaseMethods;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.RecyclerViewHolder>{
     private static final String LOG = MessageAdapter.class.getSimpleName();
+    private static final String TAG = "MessageAdapter";
+
     private List<String> nameList;
     private List<Double> markList;
     private List<Boolean> statusList;
-    private MessageAdapter.ClickListener<String, String> clickListener;
+//    private MessageAdapter.ClickListener<String, String> clickListener;
+
+    // Firebase stuff
+    private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseFirestore db;
 
 
-    public MessageAdapter(List<String> nameList, List<Double> markList, List<Boolean> statusList){
+    public MessageAdapter(Context context, List<String> nameList, List<Double> markList, List<Boolean> statusList){
+        firebaseMethods = new FirebaseMethods(context);
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         this.nameList = nameList;
         this.markList = markList;
         this.statusList = statusList;
     }
+
     @Override
     public MessageAdapter.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.teacher_message_adapter, parent, false);
@@ -35,23 +53,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     public void onBindViewHolder(MessageAdapter.RecyclerViewHolder holder, final int position) {
         final String name = nameList.get(position);
         final String studentMark = "Mark: " + markList.get(position) + "\n";
+
         final Boolean studentStatus = statusList.get(position);
         String submitStatus = "Status: ";
-        if (studentStatus) submitStatus += "Submitted \n";
-        else submitStatus += "Not Submitted \n";
+        if (studentStatus)
+            submitStatus += "Submitted \n";
+        else
+            submitStatus += "Not Submitted \n";
         final String newStatus = submitStatus;
+
         holder.studentName.setText(name);
         holder.mark.setText(studentMark);
         holder.status.setText(newStatus);
-        holder.messgButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clickListener.onItemClick(studentMark, newStatus);
-
-            }
-        });
-
     }
+
     @Override
     public int getItemCount() {
         return nameList.size();
@@ -70,15 +85,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
             status = itemView.findViewById(R.id.assg_status);
             messgButton = itemView.findViewById(R.id.messg_button);
 
+            messgButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(view.getContext(), TeacherEditTextActivity.class);
+                    intent.putExtra("mark", mark.getText().toString());
+                    intent.putExtra("status", status.getText().toString());
+                    view.getContext().startActivity(intent);
+                }
+            });
+
         }
     }
-
-    public void setOnItemClickListener(MessageAdapter.ClickListener<String, String> clickListener) {
-        this.clickListener = clickListener;
-    }
-
-    interface ClickListener<T, K> {
-        void onItemClick(T data, K status);
-    }
-
 }
