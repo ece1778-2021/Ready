@@ -2,12 +2,12 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
 <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="19dp">
 
     <TextView
@@ -41,7 +41,9 @@
             android:id="@+id/questionImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:drawable/btn_star_big_on"/>
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
+            android:scaleType="fitXY"/>
 
     </RelativeLayout>
 
@@ -61,7 +63,6 @@
         android:text="DUMMY ANSWER"
         android:textSize="16dp"
         android:layout_marginBottom="3dp"/>
-
 
 
     <LinearLayout

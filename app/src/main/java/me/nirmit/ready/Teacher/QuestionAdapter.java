@@ -132,7 +132,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                                 (questionFirebaseId.getText().toString())) {
                             if (q.getImage_path() != null) {
                                 StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(q.getImage_path());
-                                storageReference.getBytes(1024*1024)
+                                storageReference.getBytes(1024*1024*7)
                                         .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                             @Override
                                             public void onSuccess(byte[] bytes) {

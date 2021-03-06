@@ -94,7 +94,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
             StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
                     questions.get(position).getImage_path());
-            storageReference.getBytes(2048*2048)
+            storageReference.getBytes(1024*1024*7)
                     .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                         @Override
                         public void onSuccess(byte[] bytes) {
@@ -116,7 +116,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             && answers.get(position).getImage_path()!= null) {
             StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
                     answers.get(position).getImage_path());
-            storageReference.getBytes(2048*2048)
+            storageReference.getBytes(1024*1024*7)
                     .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                         @Override
                         public void onSuccess(byte[] bytes) {
@@ -154,7 +154,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             public void onClick(View view) {
                 if (imageUrl != null) {
                     StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
-                    storageReference.getBytes(2048*2048)
+                    storageReference.getBytes(1024*1024*7)
                             .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                 @Override
                                 public void onSuccess(byte[] bytes) {
