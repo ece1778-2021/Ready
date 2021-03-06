@@ -3,11 +3,13 @@ package me.nirmit.ready.Student;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -82,6 +84,9 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
     @Override
     public void onBindViewHolder(final StudentAssgAdapter.RecyclerViewHolder holder, final int position) {
 
+        final String topicText = questions.get(position).getTopic();
+        holder.topic.setText(topicText);
+
         // Display question (text or an image)
         if (questions.get(position).getImage_path() != null) {
             holder.question.setText("Question");
@@ -89,7 +94,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
             StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
                     questions.get(position).getImage_path());
-            storageReference.getBytes(1024*1024)
+            storageReference.getBytes(2048*2048)
                     .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                         @Override
                         public void onSuccess(byte[] bytes) {
@@ -111,7 +116,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             && answers.get(position).getImage_path()!= null) {
             StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
                     answers.get(position).getImage_path());
-            storageReference.getBytes(1024*1024)
+            storageReference.getBytes(2048*2048)
                     .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                         @Override
                         public void onSuccess(byte[] bytes) {
@@ -193,7 +198,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
     }
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private TextView question;
+        private TextView question, topic;
         private ImageView student_image;
         private EditText answer;
         private TextView finalAns;
@@ -205,6 +210,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             question = itemView.findViewById(R.id.student_question);
+            topic = itemView.findViewById(R.id.student_topic);
             student_image = itemView.findViewById(R.id.student_image);
             teacher_image = itemView.findViewById(R.id.teacher_image);
             answer = itemView.findViewById(R.id.student_answer_text);
@@ -227,7 +233,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                 "Camera",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        takePictureIntent();
+                        ((StudentAssignmentActivity)mcontext).takePictureIntent();
                     }
                 });
 
@@ -235,7 +241,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                 "Choose from Album",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        chooseFromAlbumIntent();
+                        ((StudentAssignmentActivity)mcontext).chooseFromAlbumIntent();
                     }
                 });
 
@@ -243,28 +249,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         alert.show();
     }
 
-    // Launch Camera Function
-    public void takePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            Activity act = ( Activity ) mcontext;
-            act.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (ActivityNotFoundException e) {
-            Log.d(TAG, String.valueOf(e));
-        }
-    }
 
-    // Open album Function
-    public void chooseFromAlbumIntent() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        try {
-            Activity act = ( Activity ) mcontext;
-            act.startActivityForResult(intent, GALLERY_REQUEST);
-        } catch (ActivityNotFoundException e) {
-            Log.d(TAG, String.valueOf(e));
-        }
-    }
+
 }
 

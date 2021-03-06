@@ -1,13 +1,13 @@
 package me.nirmit.ready.Student;
 
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,7 +31,6 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,23 +43,24 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Date;
+import java.util.Objects;
 
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
-import me.nirmit.ready.Teacher.TeacherQuestionCreationActivity;
 import me.nirmit.ready.Util.FirebaseMethods;
 import me.nirmit.ready.models.Answer;
 import me.nirmit.ready.models.Question;
-import me.nirmit.ready.models.Test;
 
 public class StudentAssignmentActivity extends AppCompatActivity {
-    
+
     private static final String LOG = StudentAssignmentActivity.class.getSimpleName();
     private static final String TAG = "StudentAssignmentActivi";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -80,6 +81,8 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private String imageUrl;
     private String testId;
     private String testType;
+    private String currentPhotoPath;
+
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -88,7 +91,8 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private FirebaseUser userAcc;
     private StorageReference storageReference;
 
-    public StudentAssignmentActivity() {}
+    public StudentAssignmentActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +107,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
         testQuestions = new ArrayList<>();
         testAnswers = new ArrayList<>();
+
 
         mAuth = FirebaseAuth.getInstance();
         userAcc = mAuth.getCurrentUser();
@@ -125,17 +130,106 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+
     // ========= Camera Methods =========
-    // Save bitmap data for the image
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    public void takePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                Log.d(TAG, "Uri" + photoURI.toString());
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    // Open album Function
+    public void chooseFromAlbumIntent() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        try {
+            startActivityForResult(intent, GALLERY_REQUEST);
+        } catch (ActivityNotFoundException e) {
+            Log.d(TAG, String.valueOf(e));
+        }
+    }
+
+    private void setPic(ImageView imageView) {
+        // Get the dimensions of the View
+        int targetW = imageView.getWidth();
+        int targetH = imageView.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+
+        BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
+
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
+//        imageView.setImageBitmap(bitmap);
+        uploadPhoto(bitmap);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_IMAGE_CAPTURE:
-                    Bundle extras = data.getExtras();
-                    imageBitmap = (Bitmap) extras.get("data");
-                    uploadPhoto(imageBitmap);
+//                    Bundle extras = data.getExtras();
+//                    imageBitmap = (Bitmap) extras.get("data");
+//                    uploadPhoto(imageBitmap);
+
+                    File file = new File(currentPhotoPath);
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(
+                                getContentResolver(), Uri.fromFile(file));
+                        uploadPhoto(imageBitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     break;
 
                 case GALLERY_REQUEST:
@@ -150,6 +244,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
             }
         }
     }
+
 
     private void uploadPhoto(Bitmap imageBitmap) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -219,7 +314,6 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     }
 
 
-
     // ============= Firebase Methods & Logic ===============
 
     private void setupFirebaseAuth() {
@@ -259,54 +353,65 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                         return p1.getDate_created().compareTo(p2.getDate_created());
                     }
                 });
-                getAnswersFirestore();
 
+                for (int i = 0; i < testQuestions.size(); i++) {
+                    testAnswers.add(new Answer());
+                }
+
+                for (int i = 0; i < testQuestions.size(); i++) {
+                    Log.d(TAG, testQuestions.get(i).getQuestion_id());
+//                    Answer[] testAnswerArr = new Answer[testQuestions.size()];
+
+                    getAnswersFirestore(testQuestions.get(i).getQuestion_id(), i);
+                }
             }
         });
     }
 
-    public void getAnswersFirestore() {
-        for(int i = 0; i < testQuestions.size(); i++) {
-            db.collection("answers")
-                    .whereEqualTo("question_id", testQuestions.get(i).getQuestion_id())
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful() && task.getResult() != null) {  // no such answer on the database
-                                if (task.getResult().isEmpty()) {
-                                    testAnswers.add(new Answer());
-                                    Log.d(TAG, "ANSWER eMPTY");
-                                } else {
-                                    boolean submitted = false;
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        if (document.getString("user_id").equals(userAcc.getUid())) {
-                                            Answer answer = document.toObject(Answer.class);
-                                            testAnswers.add(answer);
-                                            submitted = true;
-                                            Log.d(TAG, "ANSWER not null ");
-                                        }
-                                    }
-                                    if (!submitted) {  // no such answer submitted by a student
-                                        testAnswers.add(new Answer());
-                                        Log.d(TAG, "ANSWER eMPTY for student");
+    public void getAnswersFirestore(final String test_id, final int i) {
 
+        db.collection("answers")
+                .whereEqualTo("question_id", test_id)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {  // no such answer on the database
+                            if (task.getResult().isEmpty()) {
+//                                testAnswerArray[i]= new Answer();
+                                testAnswers.set(i, new Answer());
+                                Log.d(TAG, "ANSWER eMPTY");
+                            } else {
+                                boolean submitted = false;
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    if (Objects.equals(document.getString("user_id"), userAcc.getUid())) {
+                                        Answer answer = document.toObject(Answer.class);
+                                        Log.d(TAG, answer.getQuestion_id());
+//                                        testAnswerArray[i]= answer;
+                                        testAnswers.set(i, answer);
+                                        submitted = true;
+                                        Log.d(TAG, "ANSWER not null ");
                                     }
+                                }
+                                if (!submitted) {  // no such answer submitted by a student
+//                                    testAnswerArray[i]= new Answer();
+                                    testAnswers.set(i, new Answer());
+                                    Log.d(TAG, "ANSWER eMPTY for student");
+
                                 }
                             }
 
 
-                            recyclerViewAdapter =
-                                    new StudentAssgAdapter(mContext, testQuestions, testAnswers, testType, testId, imageUrl);
-                            recyclerView.setAdapter(recyclerViewAdapter);
                         }
-                    });
-        }
 
-        Log.d(LOG, "Start Recycler");
-        recyclerViewAdapter =
-                new StudentAssgAdapter(mContext, testQuestions, testAnswers, testType, testId, imageUrl);
-        recyclerView.setAdapter(recyclerViewAdapter);
+                        recyclerViewAdapter =
+                                new StudentAssgAdapter(mContext, testQuestions, testAnswers, testType, testId, imageUrl);
+                        recyclerView.setAdapter(recyclerViewAdapter);
+                    }
+
+
+                });
     }
 
-}
+
+    }
