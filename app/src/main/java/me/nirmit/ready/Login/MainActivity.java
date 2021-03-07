@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private Button btnSignup;
     private EditText mEmail, mPassword;
     private ProgressBar mProgressBar;
-    private Button tempTeacher, tempStudent; // TODO: delete
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -52,15 +51,11 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.student_assg_progressbar);
         mEmail = (EditText) findViewById(R.id.input_email);
         mPassword = (EditText) findViewById(R.id.input_password);
-        //TODO: delete the following
-        tempTeacher = (Button) findViewById(R.id.teacherBtn);
-        tempStudent = (Button) findViewById(R.id.studentBtn);
 
         mProgressBar.setVisibility(View.GONE);
         setupFirebaseAuth();
         signupBtnLogic();
         loginBtnLogic();
-        tempBtnLogic();
 
     }
 
@@ -117,25 +112,6 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                 }
-            }
-        });
-    }
-
-    // TODO: delete ones layouts completed
-    private void tempBtnLogic() {
-        tempTeacher.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, TeacherAddQuizActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        tempStudent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, StudentMainActivity.class);
-                startActivity(intent);
             }
         });
     }

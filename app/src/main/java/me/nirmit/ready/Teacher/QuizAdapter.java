@@ -111,6 +111,8 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
 //                    Toast.makeText(itemView.getContext(), "hehehe", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(itemView.getContext(), TeacherQuizQuestionsActivity.class);
                     intent.putExtra("QUIZ_FIREBASE_ID", quizFirebaseId.getText().toString());
+                    intent.putExtra("IS_QUIZ_PUBLISHED",
+                            btnPublish.getVisibility() == View.VISIBLE ? "0" : "1");
                     itemView.getContext().startActivity(intent);
                 }
             });

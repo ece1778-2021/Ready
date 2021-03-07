@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -161,6 +162,23 @@ public class FirebaseMethods {
         new_question.put("question_id", addedDocRef.getId());
         addedDocRef.set(new_question);
 
+    }
+
+    public void addAnswerFirestore(String test_id, String question_id,
+                                   String user_id, String image_path, String answer) {
+        Log.d(TAG, "Adding an answer to the Firestore backend");
+
+        Map<String, Object>  new_answer = new HashMap<>();
+        new_answer.put("test_id", test_id);
+        new_answer.put("question_id", question_id);
+        new_answer.put("user_id", user_id);
+        new_answer.put("date_submitted", getTimestamp());
+        new_answer.put("image_path", image_path);
+        new_answer.put("answer", answer);
+
+        DocumentReference addDocRef = db.collection("answers").document();
+        new_answer.put("answer_id", addDocRef.getId());
+        addDocRef.set(new_answer);
     }
 
 }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,8 +36,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
@@ -55,6 +60,8 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
     private ImageView ivQuestion, ivBackArrow, signoutBtn;
     private Context mContext;
     private Bitmap imageBitmap;
+    private String currentPhotoPath;
+
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -104,13 +111,40 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         btnDeleteLogic();
     }
 
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
     // Launch Camera Function
     private void takePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (ActivityNotFoundException e) {
-            Log.d(TAG, String.valueOf(e));
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                Log.d(TAG, "Uri" + photoURI.toString());
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
         }
     }
 
@@ -124,7 +158,6 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         } catch (ActivityNotFoundException e) {
             Log.d(TAG, String.valueOf(e));
         }
-
     }
 
     private void displayImage() {
@@ -144,10 +177,15 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_IMAGE_CAPTURE:
-                    Bundle extras = data.getExtras();
-                    imageBitmap = (Bitmap) extras.get("data");
-                    displayImage();
-                    uploadPhoto(imageBitmap);
+                    File file = new File(currentPhotoPath);
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(
+                                getContentResolver(), Uri.fromFile(file));
+                        displayImage();
+                        uploadPhoto(imageBitmap);
+                    } catch (IOException e) {
+                        Log.i(TAG, "Exception: " + e);
+                    }
                     break;
 
                 case GALLERY_REQUEST:

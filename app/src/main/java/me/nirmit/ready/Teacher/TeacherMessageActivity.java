@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +34,15 @@ import java.util.List;
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
 import me.nirmit.ready.Student.StudentMainActivity;
+import me.nirmit.ready.Util.FirebaseMethods;
+import me.nirmit.ready.models.Question;
+import me.nirmit.ready.models.User;
 
 public class TeacherMessageActivity extends AppCompatActivity {
+
+    private static final String TAG = "TeacherMessageActivity";
     private static final String LOG = StudentMainActivity.class.getSimpleName();
+
     private RecyclerView recyclerView;
     private TextView topBarTitle;
     private MessageAdapter messageAdapter;
@@ -42,6 +56,8 @@ public class TeacherMessageActivity extends AppCompatActivity {
 
     // Firebase stuff
     private FirebaseAuth mAuth;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseFirestore db;
 
 
     @Override
@@ -51,6 +67,7 @@ public class TeacherMessageActivity extends AppCompatActivity {
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
         topBarTitle.setText("Message Page");
 
+        firebaseMethods = new FirebaseMethods(TeacherMessageActivity.this);
         mContext = TeacherMessageActivity.this;
         progressBar = findViewById(R.id.messg_progressbar);
         progressBar.setVisibility(View.VISIBLE);
@@ -62,25 +79,10 @@ public class TeacherMessageActivity extends AppCompatActivity {
         markList = new ArrayList<>();
         statusList = new ArrayList<>();
 
-        //TODO: Remove
-        nameList.add("Irene");
-        markList.add(100.);
-        statusList.add(true);
-        nameList.add("Bob");
-        markList.add(90.);
-        statusList.add(false);
-
         setupFirebaseAuth();
         ivBackArrowLogic();
         signoutBtnLogic();
-
-        recyclerView = findViewById(R.id.messg_student_card);
-        messageAdapter = new MessageAdapter(nameList, markList, statusList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(messageAdapter);
-
-        messgAdapterListener();
+        setupMessageAdapterWithFirestore();
         bottomViewListener();
 
         progressBar.setVisibility(View.INVISIBLE);
@@ -88,22 +90,7 @@ public class TeacherMessageActivity extends AppCompatActivity {
     }
 
 
-
     // ============= Listener =================
-
-    private void messgAdapterListener() {
-        messageAdapter.setOnItemClickListener(new MessageAdapter.ClickListener<String, String>(){
-            @Override
-            public void onItemClick(String mark, String status) {
-                // TODO
-                Intent intent = new Intent(TeacherMessageActivity.this, TeacherEditTextActivity.class);
-                intent.putExtra("mark", mark);
-                intent.putExtra("status", status);
-                startActivity(intent);
-            }
-        });
-    }
-
     public void bottomViewListener() {
         bottomView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -151,6 +138,40 @@ public class TeacherMessageActivity extends AppCompatActivity {
     private void setupFirebaseAuth() {
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void setupMessageAdapterWithFirestore() {
+
+        CollectionReference all_users = db.collection("users");
+        Query query = all_users.whereEqualTo("mode", "Student");
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.e(TAG, "onEvent: Listen failed:" + error);
+                    return;
+                }
+
+                nameList.clear();
+                markList.clear();
+                statusList.clear();
+
+                for (DocumentSnapshot document : value) {
+                    User user = document.toObject(User.class);
+                    nameList.add(user.getName());
+                    // TODO: get the appropriate marks for the student and status list. Currently adding dummy values
+                    markList.add(100.);
+                    statusList.add(true);
+                }
+
+                recyclerView = findViewById(R.id.messg_student_card);
+                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                messageAdapter = new MessageAdapter(mContext, nameList, markList, statusList);
+                recyclerView.setAdapter(messageAdapter);
+            }
+        });
     }
 
 }
