@@ -27,7 +27,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     private List<Double> markList;
     private List<Boolean> statusList;
     private String testType;
-//    private MessageAdapter.ClickListener<String, String> clickListener;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -45,6 +44,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
         this.markList = markList;
         this.statusList = statusList;
         this.testType = testType;
+
     }
 
     @Override

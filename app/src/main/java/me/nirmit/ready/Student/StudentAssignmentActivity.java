@@ -85,8 +85,6 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private int numA;
     private boolean saveStatus;
 
-
-
     // Firebase stuff
     private FirebaseAuth mAuth;
     private FirebaseMethods firebaseMethods;
@@ -279,6 +277,8 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
     // ========== Listeners =========
 
+
+    // ========== Listeners =========
     private void signoutBtnLogic() {
         signoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -291,7 +291,6 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
     private void ivBackArrowLogic() {
@@ -396,45 +395,41 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
         // 1) Check whether the mark is calculated
         db.collection("marks")
-            .whereEqualTo("user_id", userAcc.getUid())
-            .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        boolean markFound = false;
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            if (Objects.equals(document.getString("test_id"), test_id)) {
-                                markFound = true;
-                                Log.d(TAG, "Mark is found");
-                            }
-                        }
-                        if (!markFound) {   // no such answer on the database
-                            // 2) Calculate Mark - TODO IMPROVE
-                            Log.d(TAG, "Calculate mark");
-                            double mark = 0.0;
-
-                            if (testType.equals("test")) {
-                                int count = 0;
-                                for (int i = 0; i < testQuestions.size(); i++) {
-                                    if (testQuestions.get(i).getAnswer()
-                                            .equals(testAnswers.get(i).getAnswer()))
-                                        count++;
+                .whereEqualTo("user_id", userAcc.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            boolean markFound = false;
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (Objects.equals(document.getString("test_id"), test_id)) {
+                                    markFound = true;
+                                    Log.d(TAG, "Mark is found");
                                 }
-                                mark = ((double) count * 100) / numQ;
                             }
+                            if (!markFound) {   // no such answer on the database
+                                // 2) Calculate Mark - TODO IMPROVE
+                                Log.d(TAG, "Calculate mark");
+                                double mark = 0.0;
 
-                            // 4) Save in firestore
-                            firebaseMethods.addMarkFirestore(userAcc.getUid(), test_id, mark);
+                                if (testType.equals("test")) {
+                                    int count = 0;
+                                    for (int i = 0; i < testQuestions.size(); i++) {
+                                        if (testQuestions.get(i).getAnswer()
+                                                .equals(testAnswers.get(i).getAnswer()))
+                                            count++;
+                                    }
+                                    mark = ((double) count * 100) / numQ;
+                                }
 
+                                // 4) Save in firestore
+                                firebaseMethods.addMarkFirestore(userAcc.getUid(), test_id, mark);
+
+                            }
                         }
                     }
-                }
 
-            });
-
-}
-
-
-
+                });
+    }
 }

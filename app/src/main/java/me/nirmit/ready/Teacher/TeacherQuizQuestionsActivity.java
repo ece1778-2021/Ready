@@ -73,7 +73,6 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         firebaseMethods = new FirebaseMethods(TeacherQuizQuestionsActivity.this);
         mContext = TeacherQuizQuestionsActivity.this;
         btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
-
         questions = new ArrayList<>();
         testId = getIntent().getStringExtra("QUIZ_FIREBASE_ID");
         quizPublished =  getIntent().getStringExtra("IS_QUIZ_PUBLISHED");
@@ -119,6 +118,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
     }
 
     private void btnAddQuestionLogic() {
+
         if (quizPublished.equals("1")) {
             btnAddQuestion.setVisibility(View.GONE);
         }
@@ -132,6 +132,8 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                         TeacherQuestionCreationActivity.class);
                 intent.putExtra("QUIZ_FIREBASE_ID", testId);
                 intent.putExtra("IS_QUIZ_PUBLISHED", quizPublished);
+                intent.putExtra("QUIZ_FIREBASE_ID",
+                        getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
                 startActivity(intent);
 
             }
@@ -142,6 +144,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         signoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "onClick: Signing out the user");
                 Toast.makeText(mContext, "Signing out the user", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(TeacherQuizQuestionsActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

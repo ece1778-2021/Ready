@@ -34,7 +34,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
 import me.nirmit.ready.Student.StudentMainActivity;
@@ -60,6 +59,7 @@ public class TeacherMessageActivity extends AppCompatActivity {
     private String testId;
     private String testPublished;
     private String testType;
+
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -88,6 +88,7 @@ public class TeacherMessageActivity extends AppCompatActivity {
         testId = getIntent().getStringExtra("QUIZ_FIREBASE_ID");
         testPublished = getIntent().getStringExtra("IS_QUIZ_PUBLISHED");
         testType = getIntent().getStringExtra("TEST_TYPE");
+
 
         setupFirebaseAuth();
         ivBackArrowLogic();
@@ -210,12 +211,8 @@ public class TeacherMessageActivity extends AppCompatActivity {
 
                 }
 
-
             }
         });
     }
-
-
-
 }
 
