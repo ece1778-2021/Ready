@@ -9,74 +9,154 @@
     cardView:cardCornerRadius="8dp"
     cardView:cardElevation="8dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/student_question"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:layout_margin="8dp"
-            android:fontFamily="sans-serif-smallcaps"
-            android:gravity="center_vertical"
-            android:padding="5dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            cardView:layout_constraintBottom_toBottomOf="parent"
-            cardView:layout_constraintEnd_toEndOf="parent"
-            cardView:layout_constraintHorizontal_bias="0.0"
-            cardView:layout_constraintStart_toStartOf="parent"
-            cardView:layout_constraintTop_toTopOf="parent"
-            cardView:layout_constraintVertical_bias="0.026"
-            tools:text="Question" />
+        <LinearLayout
+            android:id="@+id/questionRelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/student_topic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Topic"
+                android:fontFamily="sans-serif-smallcaps"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:textStyle="bold">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/student_question"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                cardView:layout_constraintStart_toStartOf="parent"
+                cardView:layout_constraintTop_toTopOf="parent"
+                tools:text="Question" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/teacherRelativeView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/teacher_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="visible"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                cardView:srcCompat="@android:mipmap/sym_def_app_icon" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/studentRelativeView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/student_image"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center_horizontal"
+                android:visibility="visible"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                cardView:srcCompat="@android:mipmap/sym_def_app_icon" />
+        </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/answerBtnLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible">
 
         <EditText
             android:id="@+id/student_answer_text"
-            android:layout_width="229dp"
-            android:layout_height="46dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:ems="10"
             android:fontFamily="sans-serif-smallcaps"
-            android:inputType="numberSigned|text|numberDecimal"
             android:hint="@string/student_final_answer"
+            android:inputType="textShortMessage|numberSigned|textWebEditText|text|numberDecimal"
             android:textSize="14sp"
             android:textStyle="bold"
-            cardView:layout_constraintBottom_toBottomOf="parent"
-            cardView:layout_constraintEnd_toEndOf="parent"
-            cardView:layout_constraintHorizontal_bias="0.048"
-            cardView:layout_constraintStart_toStartOf="parent"
-            cardView:layout_constraintTop_toTopOf="parent"
-            cardView:layout_constraintVertical_bias="0.91" />
+            android:visibility="visible"
+            tools:layout_editor_absoluteX="8dp" />
 
         <Button
             android:id="@+id/student_upload_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/student_upload_button"
-            cardView:layout_constraintBottom_toBottomOf="@+id/student_answer_text"
-            cardView:layout_constraintEnd_toEndOf="parent"
-            cardView:layout_constraintHorizontal_bias="0.771"
-            cardView:layout_constraintStart_toEndOf="@+id/student_answer_text"
-            cardView:layout_constraintTop_toTopOf="parent"
-            cardView:layout_constraintVertical_bias="1.0" />
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="0dp"
+            android:layout_toStartOf="@+id/assg_save_button"
+            android:text="@string/student_upload_button" />
 
-        <ImageView
-            android:id="@+id/student_image"
-            android:layout_width="0dp"
-            android:layout_height="159dp"
+        <Button
+            android:id="@+id/assg_save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="7dp"
+            android:layout_marginBottom="17dp"
+            android:text="Save" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ansLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/stu_final_answer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Answer"
+            android:fontFamily="sans-serif-smallcaps"
             android:layout_marginStart="50dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginBottom="20dp"
-            android:visibility="invisible"
-            cardView:layout_constraintBottom_toTopOf="@+id/student_answer_text"
-            cardView:layout_constraintEnd_toEndOf="parent"
-            cardView:layout_constraintHorizontal_bias="1.0"
-            cardView:layout_constraintStart_toStartOf="parent"
-            cardView:layout_constraintTop_toBottomOf="@+id/student_question"
-            cardView:layout_constraintVertical_bias="0.59"
-            cardView:srcCompat="@android:mipmap/sym_def_app_icon" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_marginBottom="10dp">
+
+        </TextView>
+    </LinearLayout>
+
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

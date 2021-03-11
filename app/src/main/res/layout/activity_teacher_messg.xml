@@ -15,7 +15,7 @@
         <include layout="@layout/layout_top_bar"></include>
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -23,16 +23,28 @@
         android:layout_marginTop="5dp">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/student_qt_rv"
+            android:id="@+id/messg_student_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical" />
 
-    </LinearLayout>
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="16dp"
+            app:menu="@menu/menu_navigation_bar"
+            android:layout_alignParentBottom="true">
+
+        </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+
+
+    </RelativeLayout>
 
     <ProgressBar
+        android:id="@+id/messg_progressbar"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:id="@+id/student_assg_progressbar"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true" />
 </RelativeLayout>

@@ -32,8 +32,16 @@
                     android:textSize="20sp"
                     android:textColor="@color/black"
                     android:layout_centerVertical="true"
-                    android:id="@+id/topBarTitle"
-                    />
+                    android:id="@+id/topBarTitle" />
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/signout"
+                    android:src="@drawable/ic_signout"/>
 
             </RelativeLayout>
 
