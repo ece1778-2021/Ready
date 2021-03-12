@@ -65,7 +65,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_teacher_add_questions);
 
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
-        topBarTitle.setText("Quiz Questions");
+        topBarTitle.setText("Questions");
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
         signoutBtn = (ImageView) findViewById(R.id.signout);
         bottomView = findViewById(R.id.bottom_navigation);
