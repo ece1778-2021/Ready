@@ -14,10 +14,46 @@
         <include layout="@layout/layout_top_bar"></include>
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/relLayout2"
+        android:layout_below="@id/relLayout1"
+        android:padding="7dp"
+        android:background="@color/info_color">
+
+        <TextView
+            android:id="@+id/assessmentLegendHW"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:textSize="12dp"
+            android:layout_marginVertical="7dp"
+            android:paddingVertical="5dp"
+            android:textAlignment="center"
+            android:backgroundTint="@color/hw_color"
+            android:background="@drawable/rounded_button"
+            android:text="Homework - No final answer input." />
+
+        <TextView
+            android:id="@+id/assessmentLegendQuiz"
+            android:layout_below="@id/assessmentLegendHW"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="7dp"
+            android:paddingVertical="5dp"
+            android:textSize="12dp"
+            android:textAlignment="center"
+            android:backgroundTint="@color/quiz_color"
+            android:background="@drawable/rounded_button"
+            android:text="Quiz - This will be graded."
+            />
+    </RelativeLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/relLayout1"
+        android:layout_below="@id/relLayout2"
         android:layout_above="@+id/btnAddQuiz"
         android:id="@+id/rcvQuizzes"/>
 
@@ -25,11 +61,9 @@
         android:id="@+id/btnAddQuiz"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_margin="10dp"
         android:background="@drawable/rounded_button"
         android:text="Add an Assessment"
         android:layout_alignParentBottom="true"/>
-
 
 </RelativeLayout>

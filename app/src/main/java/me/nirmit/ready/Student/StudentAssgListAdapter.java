@@ -26,6 +26,7 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
 
     private LayoutInflater layoutInflater;
     private List<Test> assessments;
+    private Context mContext;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -46,6 +47,7 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
     public StudentAssgListAdapter.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.student_assg_list_adapter, parent, false);
+        mContext = parent.getContext();
         return new RecyclerViewHolder(view);
     }
 
@@ -62,6 +64,13 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
         String dueTime = assessments.get(position).getDeadline_time();
         String due = "Due: " + dueDate + " " + dueTime;
         holder.dueText.setText(due);
+
+        if(assessments.get(position).getType().equals("hw")) {
+            holder.cardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.hw_color));
+        } else {
+            holder.cardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.quiz_color));
+        }
+
 
     }
 

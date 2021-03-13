@@ -9,7 +9,13 @@
     <color name="black">#000</color>
     <color name="link_blue">#005ce6</color>
     <color name="dark_grey">#979494</color>
-    <color name="btnRed">#BE7E87</color>
-    <color name="btnOrange">#E0AE9F</color>
+    <color name="btnRed">#CCA9AE</color>
+    <color name="btnOrange">#F5CABC</color>
+
+    <color name="info_color">#463C02</color>
+    <color name="topBanner_color">#570EB49B</color>
+    <color name="hw_color">#C5D8BD</color>
+    <color name="quiz_color">#C2CFCF</color>
+    <color name="question_color">#EEEEE6</color>
 
 </resources>

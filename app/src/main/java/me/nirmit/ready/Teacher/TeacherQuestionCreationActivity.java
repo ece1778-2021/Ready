@@ -294,6 +294,8 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
                     // Go back to the questions page
                     Intent intent = new Intent(mContext, TeacherQuizQuestionsActivity.class);
                     intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
+                    intent.putExtra("IS_QUIZ_PUBLISHED",  getIntent().getStringExtra("IS_QUIZ_PUBLISHED"));
+                    intent.putExtra("TEST_TYPE", getIntent().getStringExtra("TEST_TYPE"));
                     startActivity(intent);
                 }
 

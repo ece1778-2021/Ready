@@ -2,6 +2,7 @@ package me.nirmit.ready.Teacher;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     private List<String> nameList;
     private List<Double> markList;
     private List<Boolean> statusList;
-//    private MessageAdapter.ClickListener<String, String> clickListener;
+    private String testType;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -33,7 +34,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     private FirebaseFirestore db;
 
 
-    public MessageAdapter(Context context, List<String> nameList, List<Double> markList, List<Boolean> statusList){
+    public MessageAdapter(Context context, List<String> nameList, List<Double> markList,
+                          List<Boolean> statusList, String testType){
         firebaseMethods = new FirebaseMethods(context);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -41,6 +43,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
         this.nameList = nameList;
         this.markList = markList;
         this.statusList = statusList;
+        this.testType = testType;
+
     }
 
     @Override
@@ -51,20 +55,33 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
 
     @Override
     public void onBindViewHolder(MessageAdapter.RecyclerViewHolder holder, final int position) {
-        final String name = nameList.get(position);
-        final String studentMark = "Mark: " + markList.get(position) + "\n";
+        if (nameList.size() != 0) {
+            final String name = nameList.get(position);
+            holder.studentName.setText(name);
+        }
 
-        final Boolean studentStatus = statusList.get(position);
-        String submitStatus = "Status: ";
-        if (studentStatus)
-            submitStatus += "Submitted \n";
-        else
-            submitStatus += "Not Submitted \n";
-        final String newStatus = submitStatus;
+        if (statusList.size() != 0 && markList.size() != 0 && position < statusList.size()
+        && position < markList.size()) {
+            final Boolean studentStatus = statusList.get(position);
+            final String studentMark = "Mark: " + markList.get(position) + "\n";
 
-        holder.studentName.setText(name);
-        holder.mark.setText(studentMark);
-        holder.status.setText(newStatus);
+            String submitStatus;
+            if (studentStatus) {
+                submitStatus = "Submitted \n";
+                if (testType.equals("test")) {
+                    holder.mark.setText(studentMark);
+                }
+                else {
+                    holder.mark.setVisibility(View.INVISIBLE);
+                }
+            }
+            else {
+                submitStatus = "Not Submitted \n";
+                holder.mark.setVisibility(View.INVISIBLE);
+            }
+            final String newStatus = submitStatus;
+            holder.status.setText(newStatus);
+        }
     }
 
     @Override
