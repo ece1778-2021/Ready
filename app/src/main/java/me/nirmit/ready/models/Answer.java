@@ -32,7 +32,7 @@ public class Answer {
     }
 
     public String getAnswer_id() {
-        return answer;
+        return answer_id;
     }
 
     public String getUser_id() {

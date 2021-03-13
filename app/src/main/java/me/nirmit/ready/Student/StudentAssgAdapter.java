@@ -87,6 +87,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         final String topicText = questions.get(position).getTopic();
         holder.topic.setText(topicText);
         holder.progressBar.setVisibility(View.VISIBLE);
+        holder.answerLinearLayout.setVisibility(View.GONE);
 
         // Display question (text or an image)
         if (questions.get(position).getImage_path() != null) {
@@ -174,6 +175,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                                         holder.progressBar.setVisibility(View.GONE);
                                         return;
                                     }
+
                                     firebaseMethods.addAnswerFirestore(
                                             testId,
                                             questions.get(position).getQuestion_id(),
@@ -181,6 +183,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                                             imageUrl,
                                             holder.answer.getText().toString()
                                     );
+
                                     Toast.makeText(mcontext, "Answer is submitted", Toast.LENGTH_LONG).show();
                                     if (testType.equals("test")) {
                                         final String answerText = "Answer: " + holder.answer.getText().toString();
@@ -197,6 +200,28 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                 }
             }
         });
+
+        holder.updateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.answer.getText().clear();
+                holder.studentLinearLayout.setVisibility(View.GONE);
+                holder.answerLinearLayout.setVisibility(View.GONE);
+                holder.buttonLinearLayout.setVisibility(View.VISIBLE);
+
+                String answer_id = answers.get(position).getAnswer_id();
+                db.collection("answers").document(answer_id)
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "Document successfully deleted!");
+                            }
+                        });
+
+                answers.set(position, new Answer());
+            }
+        });
     }
 
     @Override
@@ -209,7 +234,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         private ImageView student_image;
         private EditText answer;
         private TextView finalAns;
-        private Button uploadButton, saveButton;
+        private Button uploadButton, saveButton, updateButton;
         private ImageView teacher_image;
         private LinearLayout teacherLinearLayout, studentLinearLayout, buttonLinearLayout, answerLinearLayout;
         private ProgressBar progressBar;
@@ -225,6 +250,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             finalAns = itemView.findViewById(R.id.stu_final_answer);
             uploadButton = itemView.findViewById(R.id.student_upload_button);
             saveButton = itemView.findViewById(R.id.assg_save_button);
+            updateButton = itemView.findViewById(R.id.update_button);
             teacherLinearLayout = itemView.findViewById(R.id.teacherRelativeView);
             studentLinearLayout = itemView.findViewById(R.id.studentRelativeView);
             buttonLinearLayout = itemView.findViewById(R.id.answerBtnLinearLayout);
