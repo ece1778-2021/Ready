@@ -117,7 +117,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         }
 
         if (answers.size() != 0 && position < answers.size()
-            && answers.get(position).getImage_path()!= null) {
+                && answers.get(position).getImage_path()!= null) {
             holder.progressBar.setVisibility(View.VISIBLE);
             StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
                     answers.get(position).getImage_path());
@@ -169,7 +169,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
                                     if (testType.equals("test") && (
                                             holder.answer.getText().toString() == null ||
-                                            holder.answer.getText().toString().trim().equals(""))){
+                                                    holder.answer.getText().toString().trim().equals(""))){
                                         Toast.makeText(mcontext, "Please enter an answer", Toast.LENGTH_LONG).show();
                                         holder.progressBar.setVisibility(View.GONE);
                                         return;
@@ -180,7 +180,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                                             userAcc.getUid(),
                                             imageUrl,
                                             holder.answer.getText().toString()
-                                            );
+                                    );
                                     Toast.makeText(mcontext, "Answer is submitted", Toast.LENGTH_LONG).show();
                                     if (testType.equals("test")) {
                                         final String answerText = "Answer: " + holder.answer.getText().toString();
@@ -261,4 +261,3 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
 
 }
-

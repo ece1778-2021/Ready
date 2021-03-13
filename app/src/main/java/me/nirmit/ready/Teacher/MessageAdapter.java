@@ -61,7 +61,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
         }
 
         if (statusList.size() != 0 && markList.size() != 0 && position < statusList.size()
-        && position < markList.size()) {
+                && position < markList.size()) {
             final Boolean studentStatus = statusList.get(position);
             final String studentMark = "Mark: " + markList.get(position) + "\n";
 
