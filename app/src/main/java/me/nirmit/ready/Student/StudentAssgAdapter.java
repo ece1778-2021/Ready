@@ -84,7 +84,6 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
     @Override
     public void onBindViewHolder(final StudentAssgAdapter.RecyclerViewHolder holder, final int position) {
-
         final String topicText = questions.get(position).getTopic();
         holder.topic.setText(topicText);
         holder.progressBar.setVisibility(View.VISIBLE);
@@ -164,6 +163,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                                 @Override
                                 public void onSuccess(byte[] bytes) {
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
                                     holder.student_image.setImageBitmap(bitmap);
                                     holder.studentLinearLayout.setVisibility(View.VISIBLE);
 
@@ -256,6 +256,17 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    // Must include these methods to avoid photos displayed in wrong pos
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
 

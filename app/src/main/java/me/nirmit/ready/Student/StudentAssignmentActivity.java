@@ -128,7 +128,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         setupFirebaseAuth();
         ivBackArrowLogic();
         signoutBtnLogic();
-        getTestQuestionsFirestore(testId, testType);
+        getTestQuestionsFirestore(testId);
 
         progressBar.setVisibility(View.INVISIBLE);
     }
@@ -274,10 +274,6 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
     }
 
-
-    // ========== Listeners =========
-
-
     // ========== Listeners =========
     private void signoutBtnLogic() {
         signoutBtn.setOnClickListener(new View.OnClickListener() {
@@ -314,7 +310,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
 
     // get test questions
-    public void getTestQuestionsFirestore(final String testId, final String testType) {
+    public void getTestQuestionsFirestore(final String testId) {
 
         CollectionReference all_tests = db.collection("questions");
         Query query = all_tests.whereEqualTo("test_id", testId);
@@ -353,12 +349,15 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                     getAnswersFirestore(testQuestions.get(i).getQuestion_id(), i);
                 }
 
+                recyclerViewAdapter =
+                        new StudentAssgAdapter(mContext, testQuestions, testAnswers, testType, testId, imageUrl);
+                recyclerView.setAdapter(recyclerViewAdapter);
+
             }
         });
     }
 
     public void getAnswersFirestore(final String question_id, final int i) {
-
         db.collection("answers")
                 .whereEqualTo("question_id", question_id)
                 .get()
@@ -379,16 +378,13 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                                     saveStatus = true;
                                     saveMarkFirestore(testQuestions.get(0).getTest_id());
                                 }
-
                             }
                         }
-
-                        recyclerViewAdapter =
-                                new StudentAssgAdapter(mContext, testQuestions, testAnswers, testType, testId, imageUrl);
-                        recyclerView.setAdapter(recyclerViewAdapter);
+                        recyclerViewAdapter.notifyItemChanged(i);
                     }
 
                 });
+
     }
 
     public void saveMarkFirestore(final String test_id) {
