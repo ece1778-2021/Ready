@@ -33,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:hint="Email"
+                android:text="studentn@gmail.com"
                 android:id="@+id/input_email"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -47,6 +48,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:hint="Password"
+                android:text="password"
                 android:id="@+id/input_password"/>
         </com.google.android.material.textfield.TextInputLayout>
 

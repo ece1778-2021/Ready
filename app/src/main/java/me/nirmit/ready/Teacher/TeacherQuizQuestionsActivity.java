@@ -132,8 +132,6 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                         TeacherQuestionCreationActivity.class);
                 intent.putExtra("QUIZ_FIREBASE_ID", testId);
                 intent.putExtra("IS_QUIZ_PUBLISHED", quizPublished);
-                intent.putExtra("QUIZ_FIREBASE_ID",
-                        getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
                 startActivity(intent);
 
             }
