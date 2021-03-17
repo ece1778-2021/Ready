@@ -70,6 +70,7 @@ public class StudentSubmissionActivity extends AppCompatActivity {
     private EditText ans;
     private TextView qText, ansText;
     private ImageView qImage, ansImage;
+    private ProgressBar qProgressBar, ansProgressBar;
     private LinearLayout cameraBtnLayout, updateBtnLayout;
     private String testId, testType, questionId, imagePath, questionText, currentPhotoPath, ansImagePath, answerId;
     private Bitmap imageBitmap;
@@ -106,6 +107,9 @@ public class StudentSubmissionActivity extends AppCompatActivity {
         qImage = findViewById(R.id.stu_question_img);
         ansImage = findViewById(R.id.student_ans_img);
         ansText = findViewById(R.id.student_ans_text);
+        qProgressBar = findViewById(R.id.student_question_progressbar);
+        ansProgressBar = findViewById(R.id.student_answer_progressbar);
+        ansProgressBar.setVisibility(View.GONE);
 
         ans = findViewById(R.id.student_ans);
         cameraBtnLayout = findViewById(R.id.student_btn_linearlayout);
@@ -140,6 +144,7 @@ public class StudentSubmissionActivity extends AppCompatActivity {
                         public void onSuccess(byte[] bytes) {
                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                             qImage.setImageBitmap(bitmap);
+                            qProgressBar.setVisibility(View.GONE);
                         }
                     });
 
@@ -148,12 +153,12 @@ public class StudentSubmissionActivity extends AppCompatActivity {
             if (questionText.length() != 0) {
                 qText.setText(questionText);
                 qText.setVisibility(View.VISIBLE);
+                qProgressBar.setVisibility(View.GONE);
             }
         }
         if (testType.equals("hw")){
             ansText.setVisibility(View.GONE);
             ans.setVisibility(View.GONE);
-
         }
     }
 
@@ -169,6 +174,7 @@ public class StudentSubmissionActivity extends AppCompatActivity {
                             if (Objects.equals(document.getString("user_id"), userAcc.getUid())) {
                                 Answer answer = document.toObject(Answer.class);
                                 // show image & answer
+                                ansProgressBar.setVisibility(View.VISIBLE);
                                 if (testType.equals("test")) {
                                     ans.setText(answer.getAnswer());
                                 }
@@ -185,6 +191,7 @@ public class StudentSubmissionActivity extends AppCompatActivity {
                                             public void onSuccess(byte[] bytes) {
                                                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                                                 ansImage.setImageBitmap(bitmap);
+                                                ansProgressBar.setVisibility(View.GONE);
                                                 ansImage.setVisibility(View.VISIBLE);
                                                 cameraBtnLayout.setVisibility(View.GONE);
                                                 updateBtnLayout.setVisibility(View.VISIBLE);
