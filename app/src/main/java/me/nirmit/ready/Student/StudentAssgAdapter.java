@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,13 +46,10 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
     private LayoutInflater layoutInflater;
     private List<Question> questions;
-    private List<Answer> answers;
     private String testType;
     private String testId;
-    private String imageUrl;
     private Context mcontext;
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int GALLERY_REQUEST = 2;
+
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -59,8 +57,8 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
     private FirebaseFirestore db;
     private FirebaseUser userAcc;
 
-    public StudentAssgAdapter(Context context, List<Question> questions, List<Answer> answers, String testType,
-                              String testId, String imageUrl){
+    public StudentAssgAdapter(Context context, List<Question> questions, String testType,
+                              String testId){
         firebaseMethods = new FirebaseMethods(context);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -68,11 +66,9 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
         this.layoutInflater = LayoutInflater.from(context);
         this.questions = questions;
-        this.answers = answers;
         this.testType = testType;
         this.mcontext = context;
         this.testId = testId;
-        this.imageUrl = imageUrl;
     }
 
     @Override
@@ -87,115 +83,18 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
         final String topicText = questions.get(position).getTopic();
         holder.topic.setText(topicText);
-        holder.progressBar.setVisibility(View.VISIBLE);
-
-        // Display question (text or an image)
-        if (questions.get(position).getImage_path() != null) {
-            holder.question.setText("Question");
-            holder.teacher_image.setVisibility(View.VISIBLE);
-
-            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
-                    questions.get(position).getImage_path());
-            storageReference.getBytes(1024*1024*7)
-                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            holder.teacher_image.setImageBitmap(bitmap);
-                            holder.teacherLinearLayout.setVisibility(View.VISIBLE);
-                            holder.progressBar.setVisibility(View.GONE);
-
-                        }
-                    });
-
-        } else { // text based question
-            final String assgQt = questions.get(position).getQuestion_text();
-            if (assgQt.length() != 0) {
-                holder.question.setText(assgQt);
-                holder.progressBar.setVisibility(View.GONE);
-            }
-        }
-
-        if (answers.size() != 0 && position < answers.size()
-            && answers.get(position).getImage_path()!= null) {
-            holder.progressBar.setVisibility(View.VISIBLE);
-            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
-                    answers.get(position).getImage_path());
-            storageReference.getBytes(1024*1024*7)
-                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            holder.student_image.setImageBitmap(bitmap);
-                            holder.studentLinearLayout.setVisibility(View.VISIBLE);
-                            if (testType.equals("test")) {
-                                final String answerText = "Answer: " + answers.get(position).getAnswer();
-                                holder.finalAns.setText(answerText);
-                                holder.buttonLinearLayout.setVisibility(View.GONE);
-                                holder.answerLinearLayout.setVisibility(View.VISIBLE);
-                            }
-                            holder.progressBar.setVisibility(View.GONE);
-                        }
-                    });
-        }
-
-
-        // Display answer box if type == test else not.
-        if (testType.equals("hw")) {
-            holder.answer.setVisibility(View.GONE);
-        }
-
-        holder.uploadButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Upload button at position " + position + " is clicked");
-                photoAlertDialog();  // launch alert
-            }
-        });
-
-        holder.saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (imageUrl != null) {
-                    holder.progressBar.setVisibility(View.VISIBLE);
-                    StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
-                    storageReference.getBytes(1024*1024*7)
-                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                @Override
-                                public void onSuccess(byte[] bytes) {
-                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                    holder.student_image.setImageBitmap(bitmap);
-                                    holder.studentLinearLayout.setVisibility(View.VISIBLE);
-
-                                    if (testType.equals("test") && (
-                                            holder.answer.getText().toString() == null ||
-                                            holder.answer.getText().toString().trim().equals(""))){
-                                        Toast.makeText(mcontext, "Please enter an answer", Toast.LENGTH_LONG).show();
-                                        holder.progressBar.setVisibility(View.GONE);
-                                        return;
-                                    }
-                                    firebaseMethods.addAnswerFirestore(
-                                            testId,
-                                            questions.get(position).getQuestion_id(),
-                                            userAcc.getUid(),
-                                            imageUrl,
-                                            holder.answer.getText().toString()
-                                            );
-                                    Toast.makeText(mcontext, "Answer is submitted", Toast.LENGTH_LONG).show();
-                                    if (testType.equals("test")) {
-                                        final String answerText = "Answer: " + holder.answer.getText().toString();
-                                        holder.finalAns.setText(answerText);
-                                        holder.buttonLinearLayout.setVisibility(View.GONE);
-                                        holder.answerLinearLayout.setVisibility(View.VISIBLE);
-                                        holder.progressBar.setVisibility(View.GONE);
-                                    }
-                                }
-                            });
-                }
-                else {
-                    Toast.makeText(mcontext, "Please upload a photo", Toast.LENGTH_LONG).show();
-                }
-            }
+        holder.studentCard.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View view) {
+                  Question question = questions.get(position);
+                  Intent intent = new Intent(mcontext, StudentSubmissionActivity.class);
+                  intent.putExtra("PUBLISHED_TEST_FIREBASE_ID", testId);
+                  intent.putExtra("TEST_TYPE", testType);
+                  intent.putExtra("image", question.getImage_path());
+                  intent.putExtra("text_question", question.getQuestion_text());
+                  intent.putExtra("question_id", question.getQuestion_id());
+                  mcontext.startActivity(intent);
+              }
         });
     }
 
@@ -205,60 +104,16 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
     }
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private TextView question, topic;
-        private ImageView student_image;
-        private EditText answer;
-        private TextView finalAns;
-        private Button uploadButton, saveButton;
-        private ImageView teacher_image;
-        private LinearLayout teacherLinearLayout, studentLinearLayout, buttonLinearLayout, answerLinearLayout;
-        private ProgressBar progressBar;
-
+        private TextView topic;
+        private CardView studentCard;
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
-            question = itemView.findViewById(R.id.student_question);
             topic = itemView.findViewById(R.id.student_topic);
-            student_image = itemView.findViewById(R.id.student_image);
-            teacher_image = itemView.findViewById(R.id.teacher_image);
-            answer = itemView.findViewById(R.id.student_answer_text);
-            finalAns = itemView.findViewById(R.id.stu_final_answer);
-            uploadButton = itemView.findViewById(R.id.student_upload_button);
-            saveButton = itemView.findViewById(R.id.assg_save_button);
-            teacherLinearLayout = itemView.findViewById(R.id.teacherRelativeView);
-            studentLinearLayout = itemView.findViewById(R.id.studentRelativeView);
-            buttonLinearLayout = itemView.findViewById(R.id.answerBtnLinearLayout);
-            answerLinearLayout = itemView.findViewById(R.id.ansLinearLayout);
-            progressBar = itemView.findViewById(R.id.question_loading);
+            studentCard = itemView.findViewById(R.id.student_qt_card);
+
         }
     }
 
-    public void photoAlertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mcontext);
-        builder.setMessage("Please upload a photo");
-        builder.setCancelable(true);
-
-        builder.setPositiveButton(
-                "Camera",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        ((StudentAssignmentActivity)mcontext).takePictureIntent();
-                    }
-                });
-
-        builder.setNegativeButton(
-                "Choose from Album",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        ((StudentAssignmentActivity)mcontext).chooseFromAlbumIntent();
-                    }
-                });
-
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-
 
 }
-

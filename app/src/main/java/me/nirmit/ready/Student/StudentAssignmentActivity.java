@@ -1,14 +1,9 @@
 package me.nirmit.ready.Student;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,11 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -41,17 +34,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Objects;
 
 import me.nirmit.ready.Login.MainActivity;
@@ -64,8 +50,6 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
     private static final String LOG = StudentAssignmentActivity.class.getSimpleName();
     private static final String TAG = "StudentAssignmentActivi";
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int GALLERY_REQUEST = 2;
 
     private RecyclerView recyclerView;
     private StudentAssgAdapter recyclerViewAdapter;
@@ -75,12 +59,11 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private TextView topBarTitle;
     private ProgressBar progressBar;
     private ImageView ivBackArrow, signoutBtn;
+    private Button submitBtn;
+
     private Context mContext;
-    private Bitmap imageBitmap;
-    private String imageUrl;
     private String testId;
     private String testType;
-    private String currentPhotoPath;
     private int numQ;
     private int numA;
     private boolean saveStatus;
@@ -121,6 +104,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         testId = getIntent().getStringExtra("PUBLISHED_TEST_FIREBASE_ID");
         testType = getIntent().getStringExtra("TEST_TYPE");
+        submitBtn = findViewById(R.id.submit_btn);
 
         recyclerView = findViewById(R.id.student_qt_rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -128,154 +112,11 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         setupFirebaseAuth();
         ivBackArrowLogic();
         signoutBtnLogic();
-        getTestQuestionsFirestore(testId, testType);
+        submitBtnLogic();
+        getTestQuestionsFirestore(testId);
 
         progressBar.setVisibility(View.INVISIBLE);
     }
-
-    // ========= Photo Methods =========
-
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-    public void takePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                Log.d(TAG, "Uri" + photoURI.toString());
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
-    }
-
-    // Open album Function
-    public void chooseFromAlbumIntent() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        try {
-            startActivityForResult(intent, GALLERY_REQUEST);
-        } catch (ActivityNotFoundException e) {
-            Log.d(TAG, String.valueOf(e));
-        }
-    }
-
-    // Can use this if needed
-    private void setPic(ImageView imageView) {
-        int targetW = imageView.getWidth();
-        int targetH = imageView.getHeight();
-
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-
-        BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
-
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
-
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
-        uploadPhoto(bitmap);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_IMAGE_CAPTURE:
-                    File file = new File(currentPhotoPath);
-                    try {
-                        imageBitmap = MediaStore.Images.Media.getBitmap(
-                                getContentResolver(), Uri.fromFile(file));
-                        uploadPhoto(imageBitmap);
-                    } catch (IOException e) {
-                        Log.i(TAG, "Exception: " + e);
-                    }
-                    break;
-
-                case GALLERY_REQUEST:
-                    Uri selectedImage = data.getData();
-                    try {
-                        imageBitmap = MediaStore.Images.Media.getBitmap(StudentAssignmentActivity.this.getContentResolver(), selectedImage);
-                        uploadPhoto(imageBitmap);
-                    } catch (IOException e) {
-                        Log.i(TAG, "Exception: " + e);
-                    }
-                    break;
-            }
-        }
-    }
-
-
-    private void uploadPhoto(Bitmap imageBitmap) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        String currentTime = String.valueOf(timestamp.getTime());
-
-        String userId = userAcc.getUid();
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-        byte[] data = byteArrayOutputStream.toByteArray();
-
-        final StorageReference ref = storageReference.child(userId).child(currentTime);
-        ref.putBytes(data)
-                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if (!task.isSuccessful()) {
-                            Log.d(TAG, "task fail: cannot upload photo");
-                        }
-                        return ref.getDownloadUrl();
-                    }
-                })
-                .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            imageUrl = task.getResult().toString();
-                            recyclerViewAdapter =
-                                    new StudentAssgAdapter(mContext, testQuestions, testAnswers, testType, testId, imageUrl);
-                            recyclerView.setAdapter(recyclerViewAdapter);
-                            Log.d(TAG, "Upload photo successfully ");
-                            Toast.makeText(mContext, "Upload success. Please save!", Toast.LENGTH_LONG).show();
-                        } else {
-                            String error = task.getException().getMessage();
-                            Log.d(TAG, error);
-                        }
-                    }
-                });
-
-    }
-
-
-    // ========== Listeners =========
 
 
     // ========== Listeners =========
@@ -303,6 +144,22 @@ public class StudentAssignmentActivity extends AppCompatActivity {
         });
     }
 
+    private void submitBtnLogic() {
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(LOG, "submit and calculate mark");
+                saveStatus = false;
+                numQ = 0;
+                numA = 0;
+                getTestQuestionsFirestore(testId);
+                if (numA != numQ) {
+                    Toast.makeText(mContext, "Please complete all answer", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 
     // ============= Firebase Methods & Logic ===============
 
@@ -314,8 +171,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
 
     // get test questions
-    public void getTestQuestionsFirestore(final String testId, final String testType) {
-
+    public void getTestQuestionsFirestore(final String testId) {
         CollectionReference all_tests = db.collection("questions");
         Query query = all_tests.whereEqualTo("test_id", testId);
 
@@ -353,12 +209,16 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                     getAnswersFirestore(testQuestions.get(i).getQuestion_id(), i);
                 }
 
+
+                recyclerViewAdapter =
+                        new StudentAssgAdapter(mContext, testQuestions, testType, testId);
+                recyclerView.setAdapter(recyclerViewAdapter);
+
             }
         });
     }
 
     public void getAnswersFirestore(final String question_id, final int i) {
-
         db.collection("answers")
                 .whereEqualTo("question_id", question_id)
                 .get()
@@ -371,6 +231,14 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                                     Answer answer = document.toObject(Answer.class);
                                     testAnswers.set(i, answer);
                                     numA++;
+
+                                }
+
+                                // Calculate mark if all questions are answered
+                                if (numA == numQ && !saveStatus) {
+                                    Log.d(TAG, "All questions are answered");
+                                    saveStatus = true;
+                                    saveMarkFirestore(testQuestions.get(0).getTest_id());
                                 }
 
                                 // Calculate mark if all questions are answered
@@ -382,13 +250,11 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
                             }
                         }
-
-                        recyclerViewAdapter =
-                                new StudentAssgAdapter(mContext, testQuestions, testAnswers, testType, testId, imageUrl);
-                        recyclerView.setAdapter(recyclerViewAdapter);
+                        recyclerViewAdapter.notifyItemChanged(i);
                     }
 
                 });
+
     }
 
     public void saveMarkFirestore(final String test_id) {
@@ -406,23 +272,16 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                                 if (Objects.equals(document.getString("test_id"), test_id)) {
                                     markFound = true;
                                     Log.d(TAG, "Mark is found");
+                                    double mark = calculateMark();
+                                    if (mark != document.getDouble("mark")) { // update mark if answers are updated
+                                        firebaseMethods.updateMarkFirestore(document.getString("mark_id"), mark);
+                                    }
                                 }
                             }
                             if (!markFound) {   // no such answer on the database
-                                // 2) Calculate Mark - TODO IMPROVE
+                                // 2) Calculate Mark
                                 Log.d(TAG, "Calculate mark");
-                                double mark = 0.0;
-
-                                if (testType.equals("test")) {
-                                    int count = 0;
-                                    for (int i = 0; i < testQuestions.size(); i++) {
-                                        if (testQuestions.get(i).getAnswer()
-                                                .equals(testAnswers.get(i).getAnswer()))
-                                            count++;
-                                    }
-                                    mark = ((double) count * 100) / numQ;
-                                }
-
+                                double mark = calculateMark();
                                 // 4) Save in firestore
                                 firebaseMethods.addMarkFirestore(userAcc.getUid(), test_id, mark);
 
@@ -431,5 +290,22 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                     }
 
                 });
+    }
+
+
+    // ============== Helpers ==============
+    public double calculateMark() {
+        double mark = 0.0;
+
+        if (testType.equals("test")) {
+            int count = 0;
+            for (int i = 0; i < testQuestions.size(); i++) {
+                if (testQuestions.get(i).getAnswer()
+                        .equals(testAnswers.get(i).getAnswer()))
+                    count++;
+            }
+            mark = ((double) count * 100) / numQ;
+        }
+        return mark;
     }
 }

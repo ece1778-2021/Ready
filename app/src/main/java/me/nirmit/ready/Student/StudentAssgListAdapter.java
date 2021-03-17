@@ -111,4 +111,3 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
     }
 
 }
-
