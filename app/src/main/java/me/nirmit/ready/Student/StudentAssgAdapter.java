@@ -83,7 +83,6 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
         final String topicText = questions.get(position).getTopic();
         holder.topic.setText(topicText);
-
         holder.studentCard.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View view) {
@@ -97,7 +96,6 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                   mcontext.startActivity(intent);
               }
         });
-
     }
 
     @Override
@@ -109,11 +107,11 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         private TextView topic;
         private CardView studentCard;
 
-
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             topic = itemView.findViewById(R.id.student_topic);
             studentCard = itemView.findViewById(R.id.student_qt_card);
+
         }
     }
 

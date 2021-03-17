@@ -208,5 +208,4 @@ public class FirebaseMethods {
         db.collection("marks").document(mark_id)
                 .update("mark", mark);
     }
-
 }

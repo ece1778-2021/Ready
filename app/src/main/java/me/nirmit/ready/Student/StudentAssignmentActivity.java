@@ -60,6 +60,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private ImageView ivBackArrow, signoutBtn;
     private Button submitBtn;
+
     private Context mContext;
     private String testId;
     private String testType;
@@ -208,6 +209,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                     getAnswersFirestore(testQuestions.get(i).getQuestion_id(), i);
                 }
 
+
                 recyclerViewAdapter =
                         new StudentAssgAdapter(mContext, testQuestions, testType, testId);
                 recyclerView.setAdapter(recyclerViewAdapter);
@@ -229,6 +231,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                                     Answer answer = document.toObject(Answer.class);
                                     testAnswers.set(i, answer);
                                     numA++;
+
                                 }
 
                                 // Calculate mark if all questions are answered
@@ -237,6 +240,14 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                                     saveStatus = true;
                                     saveMarkFirestore(testQuestions.get(0).getTest_id());
                                 }
+
+                                // Calculate mark if all questions are answered
+                                if (numA == numQ && !saveStatus) {
+                                    Log.d(TAG, "All questions are answered");
+                                    saveStatus = true;
+                                    saveMarkFirestore(testQuestions.get(0).getTest_id());
+                                }
+
                             }
                         }
                         recyclerViewAdapter.notifyItemChanged(i);
@@ -280,6 +291,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
                 });
     }
+
 
     // ============== Helpers ==============
     public double calculateMark() {
