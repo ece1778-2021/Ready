@@ -50,6 +50,8 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
     private BottomNavigationView bottomView;
     private ImageView ivBackArrow, signoutBtn;
     private Context mContext;
+    private String testId;
+    private String quizPublished;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -63,7 +65,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_teacher_add_questions);
 
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
-        topBarTitle.setText("Quiz Questions");
+        topBarTitle.setText("Questions");
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
         signoutBtn = (ImageView) findViewById(R.id.signout);
         bottomView = findViewById(R.id.bottom_navigation);
@@ -71,8 +73,9 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
         firebaseMethods = new FirebaseMethods(TeacherQuizQuestionsActivity.this);
         mContext = TeacherQuizQuestionsActivity.this;
         btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
-
         questions = new ArrayList<>();
+        testId = getIntent().getStringExtra("QUIZ_FIREBASE_ID");
+        quizPublished =  getIntent().getStringExtra("IS_QUIZ_PUBLISHED");
 
         setupFirebaseAuth();
         setupQuestionAdapterWithFirestore();
@@ -93,8 +96,9 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                     case R.id.message_button:
                         Intent intent = new Intent(TeacherQuizQuestionsActivity.this,
                                 TeacherMessageActivity.class);
-                        intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
-                        intent.putExtra("IS_QUIZ_PUBLISHED", getIntent().getStringExtra("IS_QUIZ_PUBLISHED"));
+                        intent.putExtra("QUIZ_FIREBASE_ID", testId);
+                        intent.putExtra("IS_QUIZ_PUBLISHED", quizPublished);
+                        intent.putExtra("TEST_TYPE", getIntent().getStringExtra("TEST_TYPE"));
                         startActivity(intent);
                         break;
                 }
@@ -115,7 +119,7 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
 
     private void btnAddQuestionLogic() {
 
-        if (getIntent().getStringExtra("IS_QUIZ_PUBLISHED").equals("1")) {
+        if (quizPublished.equals("1")) {
             btnAddQuestion.setVisibility(View.GONE);
         }
 
@@ -126,8 +130,8 @@ public class TeacherQuizQuestionsActivity extends AppCompatActivity {
                         "Adding a question", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(TeacherQuizQuestionsActivity.this,
                         TeacherQuestionCreationActivity.class);
-                intent.putExtra("QUIZ_FIREBASE_ID",
-                        getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
+                intent.putExtra("QUIZ_FIREBASE_ID", testId);
+                intent.putExtra("IS_QUIZ_PUBLISHED", quizPublished);
                 startActivity(intent);
 
             }

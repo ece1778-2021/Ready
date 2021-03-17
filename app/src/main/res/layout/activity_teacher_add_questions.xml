@@ -17,8 +17,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvQuestions"
         android:layout_width="match_parent"
-        android:layout_height="575dp"
-        android:layout_above="@+id/btnAddQuiz"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnAddQuestion"
         android:layout_below="@id/relLayout1" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -27,8 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/bottom_navigation"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="11dp"
-        android:layout_marginBottom="0dp"
         android:background="@drawable/rounded_button"
         android:text="Add Question"
         android:layout_margin="10dp"/>
@@ -36,9 +34,10 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="80dp"
         app:menu="@menu/menu_navigation_bar"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@color/grey">
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 

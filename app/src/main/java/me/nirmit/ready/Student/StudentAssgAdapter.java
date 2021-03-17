@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,6 +87,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
 
         final String topicText = questions.get(position).getTopic();
         holder.topic.setText(topicText);
+        holder.progressBar.setVisibility(View.VISIBLE);
 
         // Display question (text or an image)
         if (questions.get(position).getImage_path() != null) {
@@ -101,6 +103,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                             holder.teacher_image.setImageBitmap(bitmap);
                             holder.teacherLinearLayout.setVisibility(View.VISIBLE);
+                            holder.progressBar.setVisibility(View.GONE);
 
                         }
                     });
@@ -109,11 +112,13 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             final String assgQt = questions.get(position).getQuestion_text();
             if (assgQt.length() != 0) {
                 holder.question.setText(assgQt);
+                holder.progressBar.setVisibility(View.GONE);
             }
         }
 
         if (answers.size() != 0 && position < answers.size()
             && answers.get(position).getImage_path()!= null) {
+            holder.progressBar.setVisibility(View.VISIBLE);
             StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(
                     answers.get(position).getImage_path());
             storageReference.getBytes(1024*1024*7)
@@ -129,7 +134,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                                 holder.buttonLinearLayout.setVisibility(View.GONE);
                                 holder.answerLinearLayout.setVisibility(View.VISIBLE);
                             }
-
+                            holder.progressBar.setVisibility(View.GONE);
                         }
                     });
         }
@@ -145,7 +150,6 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             public void onClick(View v) {
                 Log.d(TAG, "Upload button at position " + position + " is clicked");
                 photoAlertDialog();  // launch alert
-
             }
         });
 
@@ -153,6 +157,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             @Override
             public void onClick(View view) {
                 if (imageUrl != null) {
+                    holder.progressBar.setVisibility(View.VISIBLE);
                     StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
                     storageReference.getBytes(1024*1024*7)
                             .addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -166,6 +171,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                                             holder.answer.getText().toString() == null ||
                                             holder.answer.getText().toString().trim().equals(""))){
                                         Toast.makeText(mcontext, "Please enter an answer", Toast.LENGTH_LONG).show();
+                                        holder.progressBar.setVisibility(View.GONE);
                                         return;
                                     }
                                     firebaseMethods.addAnswerFirestore(
@@ -181,6 +187,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                                         holder.finalAns.setText(answerText);
                                         holder.buttonLinearLayout.setVisibility(View.GONE);
                                         holder.answerLinearLayout.setVisibility(View.VISIBLE);
+                                        holder.progressBar.setVisibility(View.GONE);
                                     }
                                 }
                             });
@@ -205,6 +212,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
         private Button uploadButton, saveButton;
         private ImageView teacher_image;
         private LinearLayout teacherLinearLayout, studentLinearLayout, buttonLinearLayout, answerLinearLayout;
+        private ProgressBar progressBar;
 
 
         public RecyclerViewHolder(View itemView) {
@@ -221,6 +229,7 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
             studentLinearLayout = itemView.findViewById(R.id.studentRelativeView);
             buttonLinearLayout = itemView.findViewById(R.id.answerBtnLinearLayout);
             answerLinearLayout = itemView.findViewById(R.id.ansLinearLayout);
+            progressBar = itemView.findViewById(R.id.question_loading);
         }
     }
 

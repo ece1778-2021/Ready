@@ -31,6 +31,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -66,7 +67,6 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int GALLERY_REQUEST = 2;
 
-
     private RecyclerView recyclerView;
     private StudentAssgAdapter recyclerViewAdapter;
     private ArrayList<Question> testQuestions;
@@ -75,14 +75,15 @@ public class StudentAssignmentActivity extends AppCompatActivity {
     private TextView topBarTitle;
     private ProgressBar progressBar;
     private ImageView ivBackArrow, signoutBtn;
-    private Button uploadButton;
     private Context mContext;
     private Bitmap imageBitmap;
     private String imageUrl;
     private String testId;
     private String testType;
     private String currentPhotoPath;
-
+    private int numQ;
+    private int numA;
+    private boolean saveStatus;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -107,7 +108,9 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
         testQuestions = new ArrayList<>();
         testAnswers = new ArrayList<>();
-
+        numQ = 0;
+        numA = 0;
+        saveStatus = false;
 
         mAuth = FirebaseAuth.getInstance();
         userAcc = mAuth.getCurrentUser();
@@ -274,6 +277,8 @@ public class StudentAssignmentActivity extends AppCompatActivity {
 
     // ========== Listeners =========
 
+
+    // ========== Listeners =========
     private void signoutBtnLogic() {
         signoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,7 +291,6 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
     private void ivBackArrowLogic() {
@@ -330,6 +334,7 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                 for (DocumentSnapshot document : value) {
                     Question question = document.toObject(Question.class);
                     testQuestions.add(question);
+                    numQ++;
                 }
 
                 // sort the tests based on the creation time
@@ -347,14 +352,15 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                 for (int i = 0; i < testQuestions.size(); i++) {
                     getAnswersFirestore(testQuestions.get(i).getQuestion_id(), i);
                 }
+
             }
         });
     }
 
-    public void getAnswersFirestore(final String test_id, final int i) {
+    public void getAnswersFirestore(final String question_id, final int i) {
 
         db.collection("answers")
-                .whereEqualTo("question_id", test_id)
+                .whereEqualTo("question_id", question_id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -364,7 +370,16 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                                 if (Objects.equals(document.getString("user_id"), userAcc.getUid())) {
                                     Answer answer = document.toObject(Answer.class);
                                     testAnswers.set(i, answer);
+                                    numA++;
                                 }
+
+                                // Calculate mark if all questions are answered
+                                if (numA == numQ && !saveStatus) {
+                                    Log.d(TAG, "All questions are answered");
+                                    saveStatus = true;
+                                    saveMarkFirestore(testQuestions.get(0).getTest_id());
+                                }
+
                             }
                         }
 
@@ -376,5 +391,45 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                 });
     }
 
+    public void saveMarkFirestore(final String test_id) {
 
+        // 1) Check whether the mark is calculated
+        db.collection("marks")
+                .whereEqualTo("user_id", userAcc.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            boolean markFound = false;
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (Objects.equals(document.getString("test_id"), test_id)) {
+                                    markFound = true;
+                                    Log.d(TAG, "Mark is found");
+                                }
+                            }
+                            if (!markFound) {   // no such answer on the database
+                                // 2) Calculate Mark - TODO IMPROVE
+                                Log.d(TAG, "Calculate mark");
+                                double mark = 0.0;
+
+                                if (testType.equals("test")) {
+                                    int count = 0;
+                                    for (int i = 0; i < testQuestions.size(); i++) {
+                                        if (testQuestions.get(i).getAnswer()
+                                                .equals(testAnswers.get(i).getAnswer()))
+                                            count++;
+                                    }
+                                    mark = ((double) count * 100) / numQ;
+                                }
+
+                                // 4) Save in firestore
+                                firebaseMethods.addMarkFirestore(userAcc.getUid(), test_id, mark);
+
+                            }
+                        }
+                    }
+
+                });
     }
+}

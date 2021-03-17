@@ -181,4 +181,17 @@ public class FirebaseMethods {
         addDocRef.set(new_answer);
     }
 
+    public void addMarkFirestore(String user_id, String test_id, double mark) {
+        Log.d(TAG, "Adding a mark to the Firestore backend");
+
+        Map<String, Object>  new_mark = new HashMap<>();
+        new_mark.put("user_id", user_id);
+        new_mark.put("test_id", test_id);
+        new_mark.put("mark", mark);
+
+        DocumentReference addDocRef = db.collection("marks").document();
+        new_mark.put("mark_id", addDocRef.getId());
+        addDocRef.set(new_mark);
+    }
+
 }

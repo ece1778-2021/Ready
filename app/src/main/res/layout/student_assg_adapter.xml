@@ -9,6 +9,9 @@
     cardView:cardCornerRadius="8dp"
     cardView:cardElevation="8dp">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -114,7 +117,7 @@
             android:ems="10"
             android:fontFamily="sans-serif-smallcaps"
             android:hint="@string/student_final_answer"
-            android:inputType="numberSigned|text|numberDecimal"
+            android:inputType="textShortMessage|numberSigned|textWebEditText|text|numberDecimal"
             android:textSize="14sp"
             android:textStyle="bold"
             android:visibility="visible"
@@ -128,7 +131,8 @@
             android:layout_marginEnd="14dp"
             android:layout_marginBottom="0dp"
             android:layout_toStartOf="@+id/assg_save_button"
-            android:text="@string/student_upload_button" />
+            android:text="@string/student_upload_button"
+            android:background="@drawable/rounded_button"/>
 
         <Button
             android:id="@+id/assg_save_button"
@@ -136,7 +140,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="7dp"
             android:layout_marginBottom="17dp"
-            android:text="Save" />
+            android:text="Save"
+            android:background="@drawable/rounded_button"/>
     </LinearLayout>
 
     <LinearLayout
@@ -159,4 +164,12 @@
     </LinearLayout>
 
     </LinearLayout>
+
+        <ProgressBar
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:id="@+id/question_loading"/>
+
+    </RelativeLayout>
 </androidx.cardview.widget.CardView>

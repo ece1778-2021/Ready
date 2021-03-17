@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,11 +28,12 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
 import me.nirmit.ready.Student.StudentMainActivity;
@@ -53,6 +56,10 @@ public class TeacherMessageActivity extends AppCompatActivity {
     private BottomNavigationView bottomView;
     private ImageView ivBackArrow, signoutBtn;
     private Context mContext;
+    private String testId;
+    private String testPublished;
+    private String testType;
+
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -78,6 +85,10 @@ public class TeacherMessageActivity extends AppCompatActivity {
         nameList = new ArrayList<>();
         markList = new ArrayList<>();
         statusList = new ArrayList<>();
+        testId = getIntent().getStringExtra("QUIZ_FIREBASE_ID");
+        testPublished = getIntent().getStringExtra("IS_QUIZ_PUBLISHED");
+        testType = getIntent().getStringExtra("TEST_TYPE");
+
 
         setupFirebaseAuth();
         ivBackArrowLogic();
@@ -98,7 +109,8 @@ public class TeacherMessageActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.quiz_button:
                         Intent intent = new Intent(TeacherMessageActivity.this, TeacherQuizQuestionsActivity.class);
-                        intent.putExtra("QUIZ_FIREBASE_ID", getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
+                        intent.putExtra("QUIZ_FIREBASE_ID", testId);
+                        intent.putExtra("IS_QUIZ_PUBLISHED", testPublished);
                         startActivity(intent);
                         break;
                     case R.id.message_button:
@@ -159,20 +171,48 @@ public class TeacherMessageActivity extends AppCompatActivity {
                 statusList.clear();
 
                 for (DocumentSnapshot document : value) {
-                    User user = document.toObject(User.class);
+                    final User user = document.toObject(User.class);
                     nameList.add(user.getName());
-                    // TODO: get the appropriate marks for the student and status list. Currently adding dummy values
-                    markList.add(100.);
-                    statusList.add(true);
+                    String test_id = getIntent().getStringExtra("QUIZ_FIREBASE_ID");
+                    Log.d(TAG, ""+getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
+
+                    db.collection("marks")
+                            .whereEqualTo("test_id", test_id)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    boolean found = false;
+                                    if (task.isSuccessful()) {
+                                        if (task.getResult() != null &&
+                                                !task.getResult().isEmpty()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                if (Objects.equals(document.getString("user_id"), user.getUser_id())) {
+                                                    found = true;
+                                                    markList.add(document.getDouble("mark"));
+                                                    statusList.add(true);
+                                                }
+                                            }
+                                        }
+                                        if (!found)  {
+                                            markList.add(0.);
+                                            statusList.add(false);
+                                        }
+                                        recyclerView = findViewById(R.id.messg_student_card);
+                                        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                                        messageAdapter = new MessageAdapter(mContext, nameList, markList, statusList, testType);
+                                        recyclerView.setAdapter(messageAdapter);
+                                    }
+
+                                }
+
+                            });
+
+
                 }
 
-                recyclerView = findViewById(R.id.messg_student_card);
-                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                messageAdapter = new MessageAdapter(mContext, nameList, markList, statusList);
-                recyclerView.setAdapter(messageAdapter);
             }
         });
     }
-
 }
 

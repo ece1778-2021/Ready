@@ -2,6 +2,7 @@ package me.nirmit.ready.Teacher;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +34,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
 
     private LayoutInflater layoutInflater;
     private List<Test> assessments;
+    private Context mContext;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -51,6 +54,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = layoutInflater.inflate(R.layout.teacher_custom_quiz_view, parent, false);
+        mContext = parent.getContext();
         return new ViewHolder(view);
     }
 
@@ -62,6 +66,13 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
         holder.quizName.setText(quiz);
         String quizFirebaseId = assessments.get(position).getTest_id();
         holder.quizFirebaseId.setText(quizFirebaseId);
+
+        // set cardview background color
+        if(assessments.get(position).getType().equals("hw")) {
+            holder.quizCard.setCardBackgroundColor(mContext.getResources().getColor(R.color.hw_color));
+        } else {
+            holder.quizCard.setCardBackgroundColor(mContext.getResources().getColor(R.color.quiz_color));
+        }
 
         DocumentReference docRef = db.collection("tests")
                 .document(assessments.get(position).getTest_id());
@@ -108,11 +119,16 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     Log.d("QUIZ CARD:", "Card for: " + quizName.getText());
-//                    Toast.makeText(itemView.getContext(), "hehehe", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(itemView.getContext(), TeacherQuizQuestionsActivity.class);
                     intent.putExtra("QUIZ_FIREBASE_ID", quizFirebaseId.getText().toString());
                     intent.putExtra("IS_QUIZ_PUBLISHED",
                             btnPublish.getVisibility() == View.VISIBLE ? "0" : "1");
+                    for (int i = 0; i < assessments.size(); i++) {
+                        if (assessments.get(i).getTest_id().equals(quizFirebaseId.getText().toString())) {
+                            intent.putExtra("TEST_TYPE", assessments.get(i).getType());
+                        }
+                    }
+
                     itemView.getContext().startActivity(intent);
                 }
             });
