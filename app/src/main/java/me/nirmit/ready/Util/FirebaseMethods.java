@@ -181,6 +181,15 @@ public class FirebaseMethods {
         addDocRef.set(new_answer);
     }
 
+    public void updateAnswerFirestore(String answer_id, String image_path, String answer) {
+        Log.d(TAG, "Updating an answer to the Firestore backend");
+        db.collection("answers").document(answer_id)
+                .update(
+                "image_path", image_path,
+                "answer", answer
+                );
+    }
+
     public void addMarkFirestore(String user_id, String test_id, double mark) {
         Log.d(TAG, "Adding a mark to the Firestore backend");
 
@@ -192,6 +201,12 @@ public class FirebaseMethods {
         DocumentReference addDocRef = db.collection("marks").document();
         new_mark.put("mark_id", addDocRef.getId());
         addDocRef.set(new_mark);
+    }
+
+    public void updateMarkFirestore(String mark_id, double mark) {
+        Log.d(TAG, "Updating a mark to the Firestore backend");
+        db.collection("marks").document(mark_id)
+                .update("mark", mark);
     }
 
 }

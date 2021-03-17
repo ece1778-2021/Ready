@@ -38,6 +38,7 @@
         <activity android:name=".Teacher.TeacherQuestionCreationActivity"/>
         <activity android:name=".Teacher.TeacherMessageActivity"/>
         <activity android:name=".Teacher.TeacherEditTextActivity"/>
+        <activity android:name=".Student.StudentSubmissionActivity"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.android.fileprovider"

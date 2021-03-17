@@ -16,11 +16,12 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/linearlayout_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_below="@+id/relLayout1"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/student_qt_rv"
@@ -29,6 +30,24 @@
             android:scrollbars="vertical" />
 
     </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp">
+
+        <Button
+            android:id="@+id/submit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/rounded_button"
+            android:text="Submit"/>
+
+    </RelativeLayout>
 
     <ProgressBar
         android:layout_width="200dp"
