@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import me.nirmit.ready.R;
@@ -71,6 +76,18 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
             holder.cardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.quiz_color));
         }
 
+        // lock assessments that are past deadline
+        Date cDate = new Date();
+        String currentDate = new SimpleDateFormat("M/d/yyyy").format(cDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+        String currentTime = sdf.format(new Date());
+
+        String currentDateTime = currentDate + " " + currentTime;
+
+        if (currentDateTime.compareTo(due.substring(5)) > 0) {
+            // Display lock button:
+            holder.lockImageView.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -82,6 +99,7 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private TextView title, firebaseTestId, dueText;
+        private ImageView lockImageView;
         private CardView cardView;
 
         public RecyclerViewHolder(final View itemView) {
@@ -91,19 +109,27 @@ public class StudentAssgListAdapter extends RecyclerView.Adapter<StudentAssgList
             firebaseTestId.setVisibility(View.GONE);
             dueText = itemView.findViewById(R.id.due_date_text);
             cardView = itemView.findViewById(R.id.student_assg_list_card);
+            lockImageView = itemView.findViewById(R.id.lock_image);
+            lockImageView.setVisibility(View.GONE);
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(itemView.getContext(), StudentAssignmentActivity.class);
-                    intent.putExtra("PUBLISHED_TEST_FIREBASE_ID", firebaseTestId.getText().toString());
-                    // pass down the test type (test or hw)
-                    for (int i = 0; i < assessments.size(); i++) {
-                        if (assessments.get(i).getTest_id().equals(firebaseTestId.getText().toString())) {
-                            intent.putExtra("TEST_TYPE", assessments.get(i).getType());
+
+                    if (lockImageView.getVisibility() == View.GONE) {
+                        Intent intent = new Intent(itemView.getContext(), StudentAssignmentActivity.class);
+                        intent.putExtra("PUBLISHED_TEST_FIREBASE_ID", firebaseTestId.getText().toString());
+                        // pass down the test type (test or hw)
+                        for (int i = 0; i < assessments.size(); i++) {
+                            if (assessments.get(i).getTest_id().equals(firebaseTestId.getText().toString())) {
+                                intent.putExtra("TEST_TYPE", assessments.get(i).getType());
+                            }
                         }
+                        itemView.getContext().startActivity(intent);
+                    } else {
+                        Toast.makeText(itemView.getContext(),
+                            "Current Assessment Locked, Past Deadline!", Toast.LENGTH_LONG).show();
                     }
-                    itemView.getContext().startActivity(intent);
                 }
             });
 

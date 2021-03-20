@@ -23,19 +23,34 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import me.nirmit.ready.R;
+import me.nirmit.ready.Teacher.QuestionAdapter;
 import me.nirmit.ready.Util.FirebaseMethods;
 import me.nirmit.ready.models.Answer;
 import me.nirmit.ready.models.Question;
@@ -95,6 +110,28 @@ public class StudentAssgAdapter extends RecyclerView.Adapter<StudentAssgAdapter.
                   intent.putExtra("question_id", question.getQuestion_id());
                   mcontext.startActivity(intent);
               }
+        });
+
+        // check to see if a question has been answered previously. If so -> color green.
+        // Go through all the answers and fetch a matching userID and questionId.
+        CollectionReference all_answers = db.collection("answers");
+        Query query = all_answers.whereEqualTo("user_id", userAcc.getUid());
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.e(TAG, "onEvent: Listen failed:" + error);
+                    return;
+                }
+                for (DocumentSnapshot document : value) {
+                    Answer answer = document.toObject(Answer.class);
+                    if (answer.getTest_id().equals(questions.get(position).getTest_id())) {
+                        holder.studentCard.setCardBackgroundColor(mcontext.getResources().getColor(R.color.student_answered));
+                        break;
+                    }
+                }
+            }
         });
     }
 

@@ -62,5 +62,17 @@
             cardView:layout_constraintTop_toTopOf="parent"
             cardView:layout_constraintVertical_bias="0.911" />
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lock_image"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/ic_lock"
+            cardView:layout_constraintBottom_toBottomOf="parent"
+            cardView:layout_constraintEnd_toEndOf="parent"
+            cardView:layout_constraintTop_toTopOf="parent"
+            android:layout_marginRight="10dp"/>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
