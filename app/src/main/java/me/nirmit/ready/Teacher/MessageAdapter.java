@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +28,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     private List<Double> markList;
     private List<Boolean> statusList;
     private String testType;
+    private Context mContext;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -50,6 +52,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     @Override
     public MessageAdapter.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.teacher_message_adapter, parent, false);
+        mContext = parent.getContext();
         return new RecyclerViewHolder(view);
     }
 
@@ -83,6 +86,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
             final String newStatus = submitStatus;
             holder.status.setText(newStatus);
         }
+
+        // Color code card views
+        if (holder.status.getText().toString().equals("Not Submitted \n")) {
+            holder.cardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.not_submitted));
+        } else if (holder.status.getText().toString().equals("Submitted \n")) {
+            holder.cardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.submitted));
+        }
     }
 
     @Override
@@ -95,6 +105,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
         private TextView mark;
         private TextView status;
         private Button messgButton;
+        private CardView cardView;
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
@@ -102,6 +113,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
             mark = itemView.findViewById(R.id.student_mark);
             status = itemView.findViewById(R.id.assg_status);
             messgButton = itemView.findViewById(R.id.messg_button);
+            cardView = itemView.findViewById(R.id.messg_student_card);
 
             messgButton.setOnClickListener(new View.OnClickListener() {
                 @Override

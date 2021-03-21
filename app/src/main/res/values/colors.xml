@@ -18,4 +18,8 @@
     <color name="quiz_color">#C2CFCF</color>
     <color name="question_color">#EEEEE6</color>
 
+    <color name="submitted">#9BC589</color>
+    <color name="not_submitted">#C58990</color>
+    <color name="student_answered">#ADB4A9</color>
+
 </resources>
