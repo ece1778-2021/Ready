@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,16 +19,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 import me.nirmit.ready.R;
+import me.nirmit.ready.Student.StudentSubmissionActivity;
 import me.nirmit.ready.Util.FirebaseMethods;
+import me.nirmit.ready.models.User;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.RecyclerViewHolder>{
     private static final String LOG = MessageAdapter.class.getSimpleName();
     private static final String TAG = "MessageAdapter";
 
-    private List<String> nameList;
+    private List<User> nameList;
     private List<Double> markList;
     private List<Boolean> statusList;
     private String testType;
+    private String testId;
     private Context mContext;
 
     // Firebase stuff
@@ -36,8 +40,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     private FirebaseFirestore db;
 
 
-    public MessageAdapter(Context context, List<String> nameList, List<Double> markList,
-                          List<Boolean> statusList, String testType){
+    public MessageAdapter(Context context, List<User> nameList, List<Double> markList,
+                          List<Boolean> statusList, String testId, String testType){
         firebaseMethods = new FirebaseMethods(context);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -46,6 +50,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
         this.markList = markList;
         this.statusList = statusList;
         this.testType = testType;
+        this.testId = testId;
 
     }
 
@@ -59,7 +64,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     @Override
     public void onBindViewHolder(MessageAdapter.RecyclerViewHolder holder, final int position) {
         if (nameList.size() != 0) {
-            final String name = nameList.get(position);
+            final String name = nameList.get(position).getName();
             holder.studentName.setText(name);
         }
 
@@ -93,6 +98,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
         } else if (holder.status.getText().toString().equals("Submitted \n")) {
             holder.cardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.submitted));
         }
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String userId = nameList.get(position).getUser_id();
+                final boolean status = statusList.get(position);
+                if (status) {
+                    Intent intent = new Intent(mContext, HwReviewActivity.class);
+                    intent.putExtra("PUBLISHED_TEST_FIREBASE_ID", testId);
+                    intent.putExtra("TEST_TYPE", testType);
+                    intent.putExtra("USER_ID", userId);
+                }
+                else {
+                    Toast.makeText(mContext, "Student not submit the answers yet", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
     }
 
     @Override
