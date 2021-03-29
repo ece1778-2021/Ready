@@ -34,6 +34,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
     private String testId;
     private Context mContext;
 
+
     // Firebase stuff
     private FirebaseAuth mAuth;
     private FirebaseMethods firebaseMethods;
@@ -109,6 +110,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
                     intent.putExtra("PUBLISHED_TEST_FIREBASE_ID", testId);
                     intent.putExtra("TEST_TYPE", testType);
                     intent.putExtra("USER_ID", userId);
+                    mContext.startActivity(intent);
+
                 }
                 else {
                     Toast.makeText(mContext, "Student not submit the answers yet", Toast.LENGTH_SHORT).show();

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -50,10 +49,10 @@ public class HwQuestionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_teacher_review);
+        setContentView(R.layout.activity_teacher_review_question);
 
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
-        topBarTitle.setText("Assessment Review Page");
+        topBarTitle.setText("Question Review Page");
 
         firebaseMethods = new FirebaseMethods(HwQuestionActivity.this);
         mContext = HwQuestionActivity.this;

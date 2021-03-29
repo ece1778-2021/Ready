@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,7 +71,7 @@ public class HwReviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.teacher_review_adapter);
+        setContentView(R.layout.activity_teacher_review);
 
         topBarTitle = (TextView) findViewById(R.id.topBarTitle);
         topBarTitle.setText("Assessment Review Page");
@@ -82,6 +83,8 @@ public class HwReviewActivity extends AppCompatActivity {
         bottomView = findViewById(R.id.bottom_navigation);
         ivBackArrow = (ImageView) findViewById(R.id.backArrow);
         signoutBtn = (ImageView) findViewById(R.id.signout);
+        recyclerView = findViewById(R.id.review_question_card);
+
 
         testQuestions = new ArrayList<>();
         testAnswers = new ArrayList<>();
@@ -91,10 +94,13 @@ public class HwReviewActivity extends AppCompatActivity {
         userId = getIntent().getStringExtra("USER_ID");
         status = getIntent().getBooleanExtra("STATUS", false);
 
-        getTestQuestionsFirestore();
         setupFirebaseAuth();
         ivBackArrowLogic();
         signoutBtnLogic();
+        getTestQuestionsFirestore();
+
+        progressBar.setVisibility(View.GONE);
+
     }
 
     // ================= Firebase Method =================
@@ -140,11 +146,12 @@ public class HwReviewActivity extends AppCompatActivity {
 
                 for (int i = 0; i < testQuestions.size(); i++) {
                     getAnswersFirestore(testQuestions.get(i).getQuestion_id(), i);
+
                 }
 
-
                 recyclerViewAdapter =
-                        new HwReviewAdapter(mContext, testQuestions, testAnswers, testType, testId, userId);
+                        new HwReviewAdapter(mContext, testQuestions, testAnswers, testType);
+                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
                 recyclerView.setAdapter(recyclerViewAdapter);
 
             }

@@ -32,9 +32,7 @@ public class HwReviewAdapter extends RecyclerView.Adapter<HwReviewAdapter.Recycl
     private List<Question> questions;
     private List<Answer> answers;
     private String testType;
-    private String testId;
     private Context mContext;
-    private String userId;
 
     // Firebase stuff
     private FirebaseAuth mAuth;
@@ -42,8 +40,7 @@ public class HwReviewAdapter extends RecyclerView.Adapter<HwReviewAdapter.Recycl
     private FirebaseFirestore db;
 
 
-    public HwReviewAdapter(Context context, List<Question> questions, List<Answer> answers,
-                            String testId, String testType, String userId){
+    public HwReviewAdapter(Context context, List<Question> questions, List<Answer> answers, String testType){
         firebaseMethods = new FirebaseMethods(context);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -51,9 +48,6 @@ public class HwReviewAdapter extends RecyclerView.Adapter<HwReviewAdapter.Recycl
         this.questions = questions;
         this.answers = answers;
         this.testType = testType;
-        this.testId = testId;
-        this.userId = userId;
-        this.mContext = context;
 
     }
 
@@ -66,7 +60,6 @@ public class HwReviewAdapter extends RecyclerView.Adapter<HwReviewAdapter.Recycl
 
     @Override
     public void onBindViewHolder(HwReviewAdapter.RecyclerViewHolder holder, final int position) {
-
         final String topic = questions.get(position).getTopic();
         holder.topic.setText(topic);
 
@@ -80,13 +73,15 @@ public class HwReviewAdapter extends RecyclerView.Adapter<HwReviewAdapter.Recycl
                 final String studentImage = answers.get(position).getImage_path();
                 final String studentAns = answers.get(position).getAnswer();
 
-                Intent intent = new Intent(mContext, HwReviewActivity.class);
+                Intent intent = new Intent(mContext, HwQuestionActivity.class);
                 intent.putExtra("questionImage", questionImage);
                 intent.putExtra("questionText", questionText);
                 intent.putExtra("questionAns", questionAns);
                 intent.putExtra("studentImage", studentImage);
                 intent.putExtra("studentAns", studentAns);
                 intent.putExtra("TEST_TYPE", testType);
+
+                mContext.startActivity(intent);
 
             }
         });
@@ -104,9 +99,7 @@ public class HwReviewAdapter extends RecyclerView.Adapter<HwReviewAdapter.Recycl
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             topic = itemView.findViewById(R.id.hw_question_topic);
-            cardView = itemView.findViewById(R.id.messg_student_card);
-
-
+            cardView = itemView.findViewById(R.id.review_question_card);
 
         }
     }
