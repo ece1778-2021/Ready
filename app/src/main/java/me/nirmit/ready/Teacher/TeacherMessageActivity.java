@@ -49,7 +49,7 @@ public class TeacherMessageActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView topBarTitle;
     private MessageAdapter messageAdapter;
-    private List<String> nameList;
+    private List<User> nameList;
     private List<Double> markList;
     private List<Boolean> statusList;
     private ProgressBar progressBar;
@@ -172,8 +172,8 @@ public class TeacherMessageActivity extends AppCompatActivity {
 
                 for (DocumentSnapshot document : value) {
                     final User user = document.toObject(User.class);
-                    nameList.add(user.getName());
-                    String test_id = getIntent().getStringExtra("QUIZ_FIREBASE_ID");
+                    nameList.add(user);
+                    final String test_id = getIntent().getStringExtra("QUIZ_FIREBASE_ID");
                     Log.d(TAG, ""+getIntent().getStringExtra("QUIZ_FIREBASE_ID"));
 
                     db.collection("marks")
@@ -200,7 +200,7 @@ public class TeacherMessageActivity extends AppCompatActivity {
                                         }
                                         recyclerView = findViewById(R.id.messg_student_card);
                                         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                                        messageAdapter = new MessageAdapter(mContext, nameList, markList, statusList, testType);
+                                        messageAdapter = new MessageAdapter(mContext, nameList, markList, statusList, test_id, testType);
                                         recyclerView.setAdapter(messageAdapter);
                                     }
 
