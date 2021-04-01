@@ -1,15 +1,11 @@
 package me.nirmit.ready.Teacher;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,7 +19,6 @@ import me.nirmit.ready.R;
 import me.nirmit.ready.Util.FirebaseMethods;
 import me.nirmit.ready.models.Answer;
 import me.nirmit.ready.models.Question;
-import me.nirmit.ready.models.User;
 
 public class HwReviewAdapter extends RecyclerView.Adapter<HwReviewAdapter.RecyclerViewHolder>{
     private static final String LOG = HwReviewAdapter.class.getSimpleName();

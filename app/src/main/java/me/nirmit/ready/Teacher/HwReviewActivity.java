@@ -37,7 +37,6 @@ import java.util.Objects;
 
 import me.nirmit.ready.Login.MainActivity;
 import me.nirmit.ready.R;
-import me.nirmit.ready.Student.StudentAssgAdapter;
 import me.nirmit.ready.Util.FirebaseMethods;
 import me.nirmit.ready.models.Answer;
 import me.nirmit.ready.models.Question;

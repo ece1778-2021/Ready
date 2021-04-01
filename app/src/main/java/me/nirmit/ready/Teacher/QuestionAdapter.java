@@ -116,8 +116,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     Log.d("QUESTION CARD:", "Card for: " + questionName.getText());
-//                    Toast.makeText(itemView.getContext(),
-//                            "Question Card for: " + questionName.getText(), Toast.LENGTH_LONG).show();
 
                     LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
                     View popup_view = layoutInflater.inflate(R.layout.custom_question_dialog, null);

@@ -2,7 +2,6 @@ package me.nirmit.ready.Teacher;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 import me.nirmit.ready.R;
-import me.nirmit.ready.Student.StudentSubmissionActivity;
 import me.nirmit.ready.Util.FirebaseMethods;
 import me.nirmit.ready.models.User;
 
@@ -114,7 +112,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
 
                 }
                 else {
-                    Toast.makeText(mContext, "Student not submit the answers yet", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Student not submit yet", Toast.LENGTH_SHORT).show();
                 }
 
             }
