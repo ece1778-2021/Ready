@@ -41,6 +41,7 @@ public class TeacherEditTextActivity  extends AppCompatActivity {
     private Context mContext;
     private String mark;
     private String status;
+    private String phone;
 
 
     // Firebase stuff
@@ -66,6 +67,7 @@ public class TeacherEditTextActivity  extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         mark = bundle.getString("mark");
         status = bundle.getString("status");
+        phone = bundle.getString("phone");
         Log.d(LOG, mark);
 
         scoreCheckBoxLogic();
@@ -129,7 +131,7 @@ public class TeacherEditTextActivity  extends AppCompatActivity {
                     if (checkSelfPermission(Manifest.permission.SEND_SMS) ==
                             PackageManager.PERMISSION_GRANTED) {
 
-                        sendSMS("6477809249", "This is the message!");
+                        sendSMS(phone, "This is the message!");
 
                     } else {
                         requestPermissions(new String[]{Manifest.permission.SEND_SMS}, 1);
