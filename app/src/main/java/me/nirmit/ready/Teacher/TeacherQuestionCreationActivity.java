@@ -54,7 +54,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
 
     private TextView topBarTitle;
     private EditText etTopic, etQuestion, etAnswer;
-    private Button btnTypeQuestion, btnUploadQuestion, btnSave, btnCamera, btnAlbum, btnDle;
+    private Button btnTypeQuestion, btnUploadQuestion, btnSave, btnCamera, btnAlbum, btnDle, btnCancel;
     private Uri imageUrl;
     private RelativeLayout relativeLayoutQuestion, relativeLayoutBtn;
     private ImageView ivQuestion, ivBackArrow, signoutBtn;
@@ -95,6 +95,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         btnCamera = (Button) findViewById(R.id.cameraBtn);
         btnAlbum = (Button) findViewById(R.id.albumBtn);
         btnDle = (Button) findViewById(R.id.img_delete_btn);
+        btnCancel = (Button) findViewById(R.id.btnCancel);
         ivQuestion = (ImageView) findViewById(R.id.ivQuestion);
         relativeLayoutQuestion = (RelativeLayout) findViewById(R.id.questionRelLayout);
         relativeLayoutBtn = (RelativeLayout) findViewById(R.id.btnRelLayout);
@@ -109,6 +110,7 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         btnCameraLogic();
         btnAlbumLogic();
         btnDeleteLogic();
+        btnCancelLogic();
     }
 
     private File createImageFile() throws IOException {
@@ -330,6 +332,18 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
         });
     }
 
+    public void btnCancelLogic() {
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (imageUrl != null) {
+                    deletePhoto();
+                }
+                finish();
+            }
+        });
+    }
+
     private void btnUploadQuestionLogic() {
         btnUploadQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -371,9 +385,6 @@ public class TeacherQuestionCreationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: closing the activity");
-                if (imageUrl != null) {
-                    deletePhoto();
-                }
                 finish();
             }
         });

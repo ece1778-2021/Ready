@@ -111,25 +111,32 @@
                     android:id="@+id/teacher_review_ans_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Answer" />
+                    android:text="Answer"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/teacher_review_student_ans"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/teacher_review_correct_ans"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Correct Answer" />
+                    android:layout_marginTop="10dp"
+                    android:text="Correct Answer"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/teacher_review_teacher_ans"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
-                    android:layout_marginBottom="30dp" />
+                    android:layout_marginBottom="30dp"
+                    android:textSize="18sp" />
 
 
             </LinearLayout>

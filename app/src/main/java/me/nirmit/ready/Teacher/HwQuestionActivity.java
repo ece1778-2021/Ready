@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +30,7 @@ public class HwQuestionActivity extends AppCompatActivity {
     private static final String TAG = "HwQuestionActivity";
     private static final String LOG = HwQuestionActivity.class.getSimpleName();
 
-    private TextView topBarTitle;
+    private TextView topBarTitle, teacherAnsTitle, studentAnsTitle;
     private ProgressBar teacherProgressBar;
     private ProgressBar studentProgressBar;
     private BottomNavigationView bottomView;
@@ -69,6 +70,8 @@ public class HwQuestionActivity extends AppCompatActivity {
         studentImg = findViewById(R.id.teacher_review_student_img);
         studentAns = findViewById(R.id.teacher_review_student_ans);
         teacherAns = findViewById(R.id.teacher_review_teacher_ans);
+        teacherAnsTitle = findViewById(R.id.teacher_review_correct_ans);
+        studentAnsTitle = findViewById(R.id.teacher_review_ans_title);
 
         imagePath = getIntent().getStringExtra("questionImage");
         questionText = getIntent().getStringExtra("questionText");
@@ -108,9 +111,6 @@ public class HwQuestionActivity extends AppCompatActivity {
                 teacherProgressBar.setVisibility(View.GONE);
             }
         }
-        if (testType.equals("hw")){
-            teacherAns.setVisibility(View.GONE);
-        }
     }
 
     private void getAnswer() {
@@ -134,10 +134,21 @@ public class HwQuestionActivity extends AppCompatActivity {
         if (testType.equals("test")) {
             studentAns.setText(studentAnsText);
             teacherAns.setText(teacherAnsText);
+            if (studentAnsText.equals(teacherAnsText)) {
+                studentAns.setTextColor(Color.parseColor("#92CD95"));
+                teacherAns.setTextColor(Color.parseColor("#92CD95"));
+            }
+            else {
+                studentAns.setTextColor(Color.parseColor("#D74C24"));
+                teacherAns.setTextColor(Color.parseColor("#D74C24"));
+            }
         }
         else {
             studentAns.setVisibility(View.GONE);
             teacherAns.setVisibility(View.GONE);
+            studentAnsTitle.setVisibility(View.GONE);
+            teacherAnsTitle.setVisibility(View.GONE);
+
         }
     }
 

@@ -156,6 +156,9 @@ public class StudentAssignmentActivity extends AppCompatActivity {
                 if (numA != numQ) {
                     Toast.makeText(mContext, "Please complete all answer", Toast.LENGTH_SHORT).show();
                 }
+                else {
+                    Toast.makeText(mContext, "Submit successfully", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

@@ -140,7 +140,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="15dp"
         android:ems="10"
-        android:hint="@string/student_id"
+        android:hint="student/teacher ID"
         android:inputType="textPersonName" />
 
     <EditText
