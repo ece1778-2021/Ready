@@ -65,6 +65,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
         if (nameList.size() != 0) {
             final String name = nameList.get(position).getName();
             holder.studentName.setText(name);
+            holder.phoneNumber.setText(nameList.get(position).getPhoneNumber());
         }
 
         if (statusList.size() != 0 && markList.size() != 0 && position < statusList.size()
@@ -112,7 +113,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
 
                 }
                 else {
-                    Toast.makeText(mContext, "Student not submit yet", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Student has not submit yet", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -128,6 +129,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
         private TextView studentName;
         private TextView mark;
         private TextView status;
+        private TextView phoneNumber;
         private Button messgButton;
         private CardView cardView;
 
@@ -136,6 +138,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
             studentName = itemView.findViewById(R.id.messg_student_name);
             mark = itemView.findViewById(R.id.student_mark);
             status = itemView.findViewById(R.id.assg_status);
+            phoneNumber = itemView.findViewById(R.id.phone_number);
+            phoneNumber.setVisibility(View.GONE);
             messgButton = itemView.findViewById(R.id.messg_button);
             cardView = itemView.findViewById(R.id.messg_student_card);
 
@@ -145,6 +149,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.Recycler
                     Intent intent = new Intent(view.getContext(), TeacherEditTextActivity.class);
                     intent.putExtra("mark", mark.getText().toString());
                     intent.putExtra("status", status.getText().toString());
+                    intent.putExtra("phone", phoneNumber.getText().toString());
                     view.getContext().startActivity(intent);
                 }
             });
